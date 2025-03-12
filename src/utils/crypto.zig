@@ -38,10 +38,24 @@ test "AES256 encryption" {
 }
 
 pub fn decrypt(allocator: std.mem.Allocator, key: [key_size]u8, cipher: []const u8) ![]const u8 {
-    _ = key;
+    const msg_len = cipher.len - tag_size - nonce_size;
+    const message = try allocator.alloc(u8, msg_len);
+    const cipher_only = cipher[0..msg_len];
+    var tag: [tag_size]u8 = undefined;
+    var nonce: [nonce_size]u8 = undefined;
+    @memcpy(tag[0..], cipher[msg_len .. msg_len + tag_size]);
+    @memcpy(nonce[0..], cipher[msg_len + tag_size ..]);
 
-    // std.crypto.aead.aes_gcm.Aes256Gcm.decrypt(m: []u8, c: []const u8, tag: [tag_length]u8, ad: []const u8, npub: [nonce_length]u8, key: [key_length]u8);
-    return try allocator.alloc(u8, cipher.len - tag_size - nonce_size);
+    try std.crypto.aead.aes_gcm.Aes256Gcm.decrypt(
+        message,
+        cipher_only,
+        tag,
+        "",
+        nonce,
+        key,
+    );
+
+    return message;
 }
 
 test "AES256 decryption" {
