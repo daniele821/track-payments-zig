@@ -20,10 +20,15 @@ pub fn encrypt(allocator: std.mem.Allocator, key: [key_size]u8, message: []const
 
 test "AES256 encryption" {
     const allocator = std.testing.allocator;
+    const msg_len = 100;
+
     const key = [_]u8{'a'} ** key_size;
-    const msg = "b" ** 100;
+    const msg = "b" ** msg_len;
+
     const cipher = try encrypt(allocator, key, msg[0..]);
     defer allocator.free(cipher);
+
+    try std.testing.expectEqual(msg_len + tag_size + nonce_size, cipher.len);
 }
 
 // pub fn decrypt(allocator: std.mem.Allocator, key: [key_size]u8, cipher: []const u8) []const u8 {
