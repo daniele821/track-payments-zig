@@ -70,3 +70,21 @@ test "AES256 decryption" {
 
     try std.testing.expectEqual(msg_len, msg.len);
 }
+
+test "AES256 cipher" {
+    const allocator = std.testing.allocator;
+    const msg_len = 32;
+
+    const key = [_]u8{'a'} ** key_size;
+    const msg = "b" ** msg_len;
+
+    const cipher = try encrypt(allocator, key, msg[0..]);
+    defer allocator.free(cipher);
+    try std.testing.expectEqual(msg_len + tag_size + nonce_size, cipher.len);
+
+    const msg2 = try decrypt(allocator, key, cipher);
+    defer allocator.free(msg2);
+    try std.testing.expectEqual(msg_len, msg2.len);
+
+    try std.testing.expectEqualSlices(u8, msg, msg2);
+}
