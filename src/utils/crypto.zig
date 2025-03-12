@@ -9,7 +9,9 @@ pub fn encrypt(allocator: std.mem.Allocator, key: [key_size]u8, message: []const
     var tag: [tag_size]u8 = undefined;
     var nonce: [nonce_size]u8 = undefined;
     std.crypto.random.bytes(nonce[0..]);
+
     std.crypto.aead.aes_gcm.Aes256Gcm.encrypt(result[0..message.len], &tag, message, "", nonce, key);
+
     @memcpy(result[message.len..], tag[0..]);
     return result;
 }
@@ -17,7 +19,7 @@ pub fn encrypt(allocator: std.mem.Allocator, key: [key_size]u8, message: []const
 test "AES256 encryption" {
     const allocator = std.testing.allocator;
     const key = [_]u8{'a'} ** key_size;
-    const msg = "b" ** 692;
+    const msg = "b" ** 100;
     const cipher = try encrypt(allocator, key, msg[0..]);
     defer allocator.free(cipher);
 }
