@@ -3,6 +3,7 @@ const std = @import("std");
 const key_size: usize = 32;
 const nonce_size: usize = 12;
 const tag_size: usize = 16;
+const ad: []const u8 = "";
 
 pub fn encrypt(allocator: std.mem.Allocator, key: [key_size]u8, message: []const u8) ![]const u8 {
     const cipher_tag = try allocator.alloc(u8, message.len + tag_size);
@@ -10,7 +11,7 @@ pub fn encrypt(allocator: std.mem.Allocator, key: [key_size]u8, message: []const
     var nonce: [nonce_size]u8 = undefined;
     std.crypto.random.bytes(nonce[0..]);
 
-    std.crypto.aead.aes_gcm.Aes256Gcm.encrypt(cipher_tag[0..message.len], &tag, message, "", nonce, key);
+    std.crypto.aead.aes_gcm.Aes256Gcm.encrypt(cipher_tag[0..message.len], &tag, message, ad, nonce, key);
 
     @memcpy(cipher_tag[message.len..], tag[0..]);
     return cipher_tag;
