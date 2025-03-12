@@ -10,8 +10,14 @@ pub fn encrypt(allocator: std.mem.Allocator, key: [key_size]u8, message: []const
     var nonce: [nonce_size]u8 = undefined;
     std.crypto.random.bytes(nonce[0..]);
 
-    const aes256encrypt = std.crypto.aead.aes_gcm.Aes256Gcm.encrypt;
-    aes256encrypt(cipher_tag[0..message.len], &tag, message, "", nonce, key);
+    std.crypto.aead.aes_gcm.Aes256Gcm.encrypt(
+        cipher_tag[0..message.len],
+        &tag,
+        message,
+        "",
+        nonce,
+        key,
+    );
 
     @memcpy(cipher_tag[message.len .. message.len + tag_size], tag[0..]);
     @memcpy(cipher_tag[message.len + tag_size ..], nonce[0..]);
