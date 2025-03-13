@@ -14,11 +14,10 @@ pub fn build(b: *std.Build) void {
     run_step.dependOn(b.getInstallStep());
     run_step.dependOn(&b.addRunArtifact(exe).step);
 
-    // COMMENTED OUT: use zig test ./tests.zig INSTEAD, as it ignore cache!
     // add a test step
-    // const test_step = b.step("test", "Run the tests");
-    // const tests = b.addTest(.{
-    //     .root_source_file = b.path("src/tests.zig"),
-    // });
-    // test_step.dependOn(&b.addRunArtifact(tests).step);
+    const test_step = b.step("test", "Run the tests");
+    const tests = b.addTest(.{
+        .root_source_file = b.path("src/tests.zig"),
+    });
+    test_step.dependOn(&b.addRunArtifact(tests).step);
 }
