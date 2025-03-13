@@ -1,8 +1,8 @@
 const std = @import("std");
 
-const key_size: usize = 32;
-const nonce_size: usize = 12;
-const tag_size: usize = 16;
+pub const key_size: usize = 32;
+pub const nonce_size: usize = 12;
+pub const tag_size: usize = 16;
 
 pub fn encrypt(allocator: std.mem.Allocator, key: [key_size]u8, message: []const u8) ![]const u8 {
     const cipher_tag = try allocator.alloc(u8, message.len + tag_size + nonce_size);
