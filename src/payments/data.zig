@@ -58,19 +58,19 @@ const Order = struct {
     }
 };
 
-test "AllPayments" {
+test "AllPayments init" {
     const allocator = std.testing.allocator;
     var allPayments = AllPayments.init(allocator);
     defer allPayments.deinit();
 }
 
-test "ValueSet" {
+test "ValueSet init" {
     const allocator = std.testing.allocator;
     var value_set = ValueSet.init(allocator);
     defer value_set.deinit();
 }
 
-test "Order" {
+test "Order init" {
     const allocator = std.testing.allocator;
     var value_set = ValueSet.init(allocator);
     defer value_set.deinit();
