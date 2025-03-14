@@ -3,6 +3,23 @@ const std = @import("std");
 const StringSet = std.StringHashMap(void);
 const String = []const u8;
 
+const InsertError = error{NotInValueSet};
+
+const AllPayments = struct {
+    allocator: std.mem.Allocator,
+    value_set: ValueSet,
+
+    pub fn init(allocator: std.mem.Allocator) AllPayments {
+        return .{
+            .allocator = allocator,
+            .value_set = ValueSet.init(allocator),
+        };
+    }
+    pub fn deinit(self: *AllPayments) void {
+        self.value_set.deinit();
+    }
+};
+
 const ValueSet = struct {
     allocator: std.mem.Allocator,
     cities: StringSet,
@@ -27,29 +44,33 @@ const ValueSet = struct {
     }
 };
 
-// const Order = struct {
-//     quantity: u32,
-//     unit_price: u32,
-//     item: String,
-// };
+const Order = struct {
+    quantity: u32,
+    unit_price: u32,
+    item: String,
 
-const AllPayments = struct {
-    allocator: std.mem.Allocator,
-    value_set: ValueSet,
-
-    pub fn init(allocator: std.mem.Allocator) AllPayments {
+    pub fn init(value_set: ValueSet, quantity: u32, unit_price: u32, item: String) InsertError!Order {
         return .{
-            .allocator = allocator,
-            .value_set = ValueSet.init(allocator),
+            .quantity = quantity,
+            .unit_price = unit_price,
+            .item = value_set.items.getKey(item) orelse return InsertError.NotInValueSet,
         };
-    }
-    pub fn deinit(self: *AllPayments) void {
-        self.value_set.deinit();
     }
 };
 
-test "init" {
+test "AllPayments" {
     const allocator = std.testing.allocator;
     var allPayments = AllPayments.init(allocator);
-    defer _ = allPayments.deinit();
+    defer allPayments.deinit();
+}
+
+test "ValueSet" {
+    const allocator = std.testing.allocator;
+    const value_set = ValueSet.init(allocator);
+    _ = value_set;
+}
+
+test "Order" {
+    const allocator = std.testing.allocator;
+    _ = try Order.init(ValueSet.init(allocator), 1, 123, "12");
 }
