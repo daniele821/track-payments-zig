@@ -1,6 +1,7 @@
 const std = @import("std");
 
 const StringSet = std.StringHashMap(void);
+const String = []const u8;
 
 const ValueSet = struct {
     allocator: std.mem.Allocator,
@@ -26,19 +27,23 @@ const ValueSet = struct {
     }
 };
 
+// const Order = struct {
+//     quantity: u32,
+//     unit_price: u32,
+//     item: String,
+// };
+
 const AllPayments = struct {
     allocator: std.mem.Allocator,
     value_set: ValueSet,
 
-    const Self = @This();
-
     pub fn init(allocator: std.mem.Allocator) AllPayments {
-        return Self{
+        return .{
             .allocator = allocator,
             .value_set = ValueSet.init(allocator),
         };
     }
-    pub fn deinit(self: *Self) void {
+    pub fn deinit(self: *AllPayments) void {
         self.value_set.deinit();
     }
 };
