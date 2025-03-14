@@ -43,8 +43,6 @@ const Order = struct {
     }
 };
 
-const Payment = struct {};
-
 const AllPayments = struct {
     allocator: std.mem.Allocator,
     value_set: ValueSet,
