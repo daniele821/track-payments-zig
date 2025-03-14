@@ -66,11 +66,14 @@ test "AllPayments" {
 
 test "ValueSet" {
     const allocator = std.testing.allocator;
-    const value_set = ValueSet.init(allocator);
-    _ = value_set;
+    var value_set = ValueSet.init(allocator);
+    defer value_set.deinit();
 }
 
 test "Order" {
     const allocator = std.testing.allocator;
-    _ = try Order.init(ValueSet.init(allocator), 1, 123, "12");
+    var value_set = ValueSet.init(allocator);
+    defer value_set.deinit();
+    try value_set.items.put("Item", {});
+    _ = try Order.init(value_set, 1, 123, "Item");
 }
