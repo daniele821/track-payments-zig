@@ -5,21 +5,6 @@ const String = []const u8;
 
 const InsertError = error{NotInValueSet};
 
-const AllPayments = struct {
-    allocator: std.mem.Allocator,
-    value_set: ValueSet,
-
-    pub fn init(allocator: std.mem.Allocator) AllPayments {
-        return .{
-            .allocator = allocator,
-            .value_set = ValueSet.init(allocator),
-        };
-    }
-    pub fn deinit(self: *AllPayments) void {
-        self.value_set.deinit();
-    }
-};
-
 const ValueSet = struct {
     allocator: std.mem.Allocator,
     cities: StringSet,
@@ -55,6 +40,23 @@ const Order = struct {
             .unit_price = unit_price,
             .item = value_set.items.getKey(item) orelse return InsertError.NotInValueSet,
         };
+    }
+};
+
+const Payment = struct {};
+
+const AllPayments = struct {
+    allocator: std.mem.Allocator,
+    value_set: ValueSet,
+
+    pub fn init(allocator: std.mem.Allocator) AllPayments {
+        return .{
+            .allocator = allocator,
+            .value_set = ValueSet.init(allocator),
+        };
+    }
+    pub fn deinit(self: *AllPayments) void {
+        self.value_set.deinit();
     }
 };
 
