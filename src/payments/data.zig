@@ -49,7 +49,7 @@ const Order = struct {
     unit_price: u32,
     item: String,
 
-    pub fn init(value_set: ValueSet, quantity: u32, unit_price: u32, item: String) InsertError!Order {
+    pub fn new(value_set: ValueSet, quantity: u32, unit_price: u32, item: String) InsertError!Order {
         return .{
             .quantity = quantity,
             .unit_price = unit_price,
@@ -75,5 +75,5 @@ test "Order" {
     var value_set = ValueSet.init(allocator);
     defer value_set.deinit();
     try value_set.items.put("Item", {});
-    _ = try Order.init(value_set, 1, 123, "Item");
+    _ = try Order.new(value_set, 1, 123, "Item");
 }
