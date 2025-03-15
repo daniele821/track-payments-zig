@@ -1,9 +1,9 @@
 const std = @import("std");
 
 const Time = struct {
-    years: u16 = 0,
-    months: u4 = 0,
-    days: u5 = 0,
+    years: u16 = 1970,
+    months: u4 = 1,
+    days: u5 = 1,
     hours: u5 = 0,
     minutes: u6 = 0,
     secs: u7 = 0,
@@ -45,7 +45,7 @@ const Time = struct {
 test "time from millisecs" {
     const time0 = Time.fromMillisecs(0);
     const time1 = Time.fromMillisecs(1742048633345);
-    try std.testing.expectEqualDeep(Time{ .years = 1970, .months = 1, .days = 1 }, time0);
+    try std.testing.expectEqualDeep(Time{}, time0);
     try std.testing.expectEqualDeep(Time{ .years = 2025, .months = 3, .days = 15, .hours = 14, .minutes = 23, .secs = 53, .millisecs = 345 }, time1);
 }
 
