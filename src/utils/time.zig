@@ -31,8 +31,10 @@ const Time = struct {
         };
     }
 
-    pub fn fromSecs(timestamp_secs: u64) Time {
-        return fromMillisecs(timestamp_secs * std.time.ms_per_s);
+    pub fn toTimestampMillisec(time: Time) u64 {
+        var timestamp_millisec: u64 = 0;
+        timestamp_millisec += time.millisecs;
+        return timestamp_millisec;
     }
 };
 
@@ -41,4 +43,11 @@ test "time from millisecs" {
     const time1 = Time.fromMillisecs(1742048633345);
     try std.testing.expectEqualDeep(Time{ .years = 1970, .months = 1, .days = 1 }, time0);
     try std.testing.expectEqualDeep(Time{ .years = 2025, .months = 3, .days = 15, .hours = 14, .minutes = 23, .secs = 53, .millisecs = 345 }, time1);
+}
+
+test "time to millisecs" {
+    const time0 = Time.fromMillisecs(0);
+    const time1 = Time.fromMillisecs(1742048633345);
+    try std.testing.expectEqual(0, time0.toTimestampMillisec());
+    try std.testing.expectEqual(1742048633345, time1.toTimestampMillisec());
 }
