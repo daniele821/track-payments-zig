@@ -33,7 +33,11 @@ const Time = struct {
 
     pub fn toTimestampMillisec(time: Time) u64 {
         var timestamp_millisec: u64 = 0;
-        timestamp_millisec += time.millisecs;
+        timestamp_millisec += @as(u64, time.millisecs);
+        timestamp_millisec += @as(u64, time.secs) * std.time.ms_per_s;
+        timestamp_millisec += @as(u64, time.minutes) * std.time.ms_per_hour;
+        timestamp_millisec += @as(u64, time.hours) * std.time.ms_per_hour;
+        timestamp_millisec += @as(u64, time.days) * std.time.ms_per_day;
         return timestamp_millisec;
     }
 };
