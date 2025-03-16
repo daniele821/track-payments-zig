@@ -1,9 +1,10 @@
 const std = @import("std");
+const errors = @import("./errors.zig");
 
 const StringSet = std.StringHashMap(void);
 const String = []const u8;
 
-const InsertError = error{NotInValueSet};
+const InsertError = errors.InsertError;
 
 const ValueSet = struct {
     allocator: std.mem.Allocator,
