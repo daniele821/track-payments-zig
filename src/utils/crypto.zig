@@ -25,6 +25,15 @@ pub fn encrypt(key: [key_size]u8, message: []const u8, cipher: []u8) void {
     @memcpy(cipher[message.len + tag_size ..], nonce[0..]);
 }
 
+test "AES256 encryption" {
+    const msg_len = 32;
+    const key = [_]u8{'a'} ** key_size;
+    const msg = "b" ** msg_len;
+    var cipher: [msg_len + extra_size]u8 = undefined;
+
+    encrypt(key, msg[0..], cipher[0..]);
+}
+
 pub fn decrypt(key: [key_size]u8, cipher: []const u8, message: []u8) !void {
     std.debug.assert(message.len == cipher.len - extra_size);
 
@@ -42,15 +51,6 @@ pub fn decrypt(key: [key_size]u8, cipher: []const u8, message: []u8) !void {
         nonce,
         key,
     );
-}
-
-test "AES256 encryption" {
-    const msg_len = 32;
-    const key = [_]u8{'a'} ** key_size;
-    const msg = "b" ** msg_len;
-    var cipher: [msg_len + extra_size]u8 = undefined;
-
-    encrypt(key, msg[0..], cipher[0..]);
 }
 
 test "AES256 decryption" {

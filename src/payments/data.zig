@@ -30,6 +30,12 @@ const ValueSet = struct {
     }
 };
 
+test "ValueSet init" {
+    const allocator = std.testing.allocator;
+    var value_set = ValueSet.init(allocator);
+    defer value_set.deinit();
+}
+
 const Order = struct {
     quantity: u32,
     unit_price: u32,
@@ -43,6 +49,14 @@ const Order = struct {
         };
     }
 };
+
+test "Order init" {
+    const allocator = std.testing.allocator;
+    var value_set = ValueSet.init(allocator);
+    defer value_set.deinit();
+    try value_set.items.put("Item", {});
+    _ = try Order.new(value_set, 1, 123, "Item");
+}
 
 const AllPayments = struct {
     allocator: std.mem.Allocator,
@@ -63,18 +77,4 @@ test "AllPayments init" {
     const allocator = std.testing.allocator;
     var allPayments = AllPayments.init(allocator);
     defer allPayments.deinit();
-}
-
-test "ValueSet init" {
-    const allocator = std.testing.allocator;
-    var value_set = ValueSet.init(allocator);
-    defer value_set.deinit();
-}
-
-test "Order init" {
-    const allocator = std.testing.allocator;
-    var value_set = ValueSet.init(allocator);
-    defer value_set.deinit();
-    try value_set.items.put("Item", {});
-    _ = try Order.new(value_set, 1, 123, "Item");
 }
