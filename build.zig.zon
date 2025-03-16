@@ -3,7 +3,12 @@
     .version = "0.0.0",
     .fingerprint = 0xeee42ddeb87eb21d, // Changing this has security and trust implications.
     .minimum_zig_version = "0.14.0",
-    .dependencies = .{},
+    .dependencies = .{
+        .zdt = .{
+            .url = "git+https://github.com/FObersteiner/zdt#b2f09b95ae98f77ba656f458024de5b535dd0fd2",
+            .hash = "zdt-0.6.0-xr0_vHS1EABDzhF4_j7ksJ4JCz4Zf0WpMddowppGvVT5",
+        },
+    },
     .paths = .{
         "build.zig",
         "build.zig.zon",
