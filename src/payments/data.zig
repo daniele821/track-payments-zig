@@ -3,7 +3,7 @@ const errors = @import("./errors.zig");
 
 const InsertError = errors.InsertError;
 
-pub const ValueSet = struct {
+const ValueSet = struct {
     allocator: std.mem.Allocator,
     cities: std.StringHashMap(void),
     shops: std.StringHashMap(void),
@@ -38,7 +38,7 @@ test "ValueSet init" {
     try value_set.methods.put("Method1", {});
 }
 
-pub const Order = struct {
+const Order = struct {
     quantity: u32,
     unit_price: u32,
     item: []const u8,
@@ -64,7 +64,7 @@ test "Order init" {
     try std.testing.expectError(InsertError.NotInValueSet, failure);
 }
 
-pub const Payment = struct {
+const Payment = struct {
     allocator: std.mem.Allocator,
     city: []const u8,
     shop: []const u8,
