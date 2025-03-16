@@ -1,0 +1,23 @@
+name: Zig Build Test
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Run Zig Tests
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@main
+      - uses: mlugg/setup-zig@v1
+        with:
+          version: 0.14.0
+      - run: zig build test
+
