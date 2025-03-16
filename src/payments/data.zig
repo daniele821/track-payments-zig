@@ -36,6 +36,9 @@ test "ValueSet init" {
     defer value_set.deinit();
 
     try value_set.items.put("Item1", {});
+    try value_set.cities.put("City1", {});
+    try value_set.shops.put("Shop1", {});
+    try value_set.methods.put("Method1", {});
 }
 
 const Order = struct {
