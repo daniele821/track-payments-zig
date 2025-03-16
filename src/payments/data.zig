@@ -67,18 +67,63 @@ test "Order init" {
     try std.testing.expectError(InsertError.NotInValueSet, failure);
 }
 
+const Payment = struct {
+    allocator: std.mem.Allocator,
+    city: String,
+    shop: String,
+    method: String,
+    date: i64,
+    orders: std.ArrayList(Order),
+
+    pub fn init(
+        allocator: std.mem.Allocator,
+        value_set: ValueSet,
+        city: String,
+        shop: String,
+        method: String,
+        date: i64,
+    ) InsertError!Payment {
+        return .{
+            .allocator = allocator,
+            .city = value_set.cities.getKey(city) orelse return InsertError.NotInValueSet,
+            .shop = value_set.shops.getKey(shop) orelse return InsertError.NotInValueSet,
+            .method = value_set.methods.getKey(method) orelse return InsertError.NotInValueSet,
+            .date = date,
+            .orders = std.ArrayList(Order).init(allocator),
+        };
+    }
+    pub fn deinit(self: *Payment) void {
+        self.orders.deinit();
+    }
+};
+
+test "Payment init" {
+    const allocator = std.testing.allocator;
+    var value_set = ValueSet.init(allocator);
+    defer value_set.deinit();
+    try value_set.shops.put("Shop1", {});
+    try value_set.cities.put("City1", {});
+    try value_set.methods.put("Method1", {});
+
+    var payment = try Payment.init(allocator, value_set, "City1", "Shop1", "Method1", 0);
+    defer payment.deinit();
+}
+
 const AllPayments = struct {
     allocator: std.mem.Allocator,
     value_set: ValueSet,
+    payments: std.ArrayList(Payment),
 
     pub fn init(allocator: std.mem.Allocator) AllPayments {
         return .{
             .allocator = allocator,
             .value_set = ValueSet.init(allocator),
+            .payments = std.ArrayList(Payment).init(allocator),
         };
     }
     pub fn deinit(self: *AllPayments) void {
         self.value_set.deinit();
+        self.payments.deinit();
     }
 };
 
