@@ -1,8 +1,6 @@
 const std = @import("std");
 const errors = @import("./errors.zig");
 
-const String = []const u8;
-
 const InsertError = errors.InsertError;
 
 const ValueSet = struct {
@@ -43,9 +41,9 @@ test "ValueSet init" {
 const Order = struct {
     quantity: u32,
     unit_price: u32,
-    item: String,
+    item: []const u8,
 
-    pub fn new(value_set: ValueSet, quantity: u32, unit_price: u32, item: String) InsertError!Order {
+    pub fn new(value_set: ValueSet, quantity: u32, unit_price: u32, item: []const u8) InsertError!Order {
         return .{
             .quantity = quantity,
             .unit_price = unit_price,
@@ -68,18 +66,18 @@ test "Order init" {
 
 const Payment = struct {
     allocator: std.mem.Allocator,
-    city: String,
-    shop: String,
-    method: String,
+    city: []const u8,
+    shop: []const u8,
+    method: []const u8,
     date: i64,
     orders: std.ArrayList(Order),
 
     pub fn init(
         allocator: std.mem.Allocator,
         value_set: ValueSet,
-        city: String,
-        shop: String,
-        method: String,
+        city: []const u8,
+        shop: []const u8,
+        method: []const u8,
         date: i64,
     ) InsertError!Payment {
         return .{
