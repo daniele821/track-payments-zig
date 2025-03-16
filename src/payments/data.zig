@@ -34,6 +34,8 @@ test "ValueSet init" {
     const allocator = std.testing.allocator;
     var value_set = ValueSet.init(allocator);
     defer value_set.deinit();
+
+    try value_set.items.put("Item1", {});
 }
 
 const Order = struct {
@@ -54,8 +56,12 @@ test "Order init" {
     const allocator = std.testing.allocator;
     var value_set = ValueSet.init(allocator);
     defer value_set.deinit();
+
     try value_set.items.put("Item", {});
     _ = try Order.new(value_set, 1, 123, "Item");
+
+    const failure = Order.new(value_set, 2, 100, "InvalidItem");
+    try std.testing.expectError(InsertError.NotInValueSet, failure);
 }
 
 const AllPayments = struct {
