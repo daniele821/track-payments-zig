@@ -1,25 +1,24 @@
 const std = @import("std");
 const errors = @import("./errors.zig");
 
-const StringSet = std.StringHashMap(void);
 const String = []const u8;
 
 const InsertError = errors.InsertError;
 
 const ValueSet = struct {
     allocator: std.mem.Allocator,
-    cities: StringSet,
-    shops: StringSet,
-    methods: StringSet,
-    items: StringSet,
+    cities: std.StringHashMap(void),
+    shops: std.StringHashMap(void),
+    methods: std.StringHashMap(void),
+    items: std.StringHashMap(void),
 
     pub fn init(allocator: std.mem.Allocator) ValueSet {
         return .{
             .allocator = allocator,
-            .cities = StringSet.init(allocator),
-            .shops = StringSet.init(allocator),
-            .methods = StringSet.init(allocator),
-            .items = StringSet.init(allocator),
+            .cities = std.StringHashMap(void).init(allocator),
+            .shops = std.StringHashMap(void).init(allocator),
+            .methods = std.StringHashMap(void).init(allocator),
+            .items = std.StringHashMap(void).init(allocator),
         };
     }
     pub fn deinit(self: *ValueSet) void {
