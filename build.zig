@@ -15,7 +15,9 @@ pub fn build(b: *std.Build) void {
 
     // add a run step
     const run_step = b.step("run", "run the program");
-    run_step.dependOn(&b.addRunArtifact(exe).step);
+    const run_cmd = b.addRunArtifact(exe);
+    if (b.args) |args| run_cmd.addArgs(args);
+    run_step.dependOn(&run_cmd.step);
 
     // add a test step
     const test_step = b.step("test", "Run the tests");
