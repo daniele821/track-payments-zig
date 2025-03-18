@@ -208,9 +208,8 @@ pub const AllPayments = struct {
     }
 
     pub fn addPayment(self: *AllPayments, payment: Payment) !*Payment {
-        if (self.dates.contains(payment.date)) {
-            return InsertError.NotUniqueValue;
-        }
+        if (self.dates.contains(payment.date)) return InsertError.NotUniqueValue;
+
         var self_tmp = self;
         const allocated_payment = try self_tmp.allocator.create(Payment);
         allocated_payment.* = payment;
