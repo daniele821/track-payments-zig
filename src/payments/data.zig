@@ -40,7 +40,7 @@ test "ValueSet" {
 const Order = struct {
     quantity: u32,
     unit_price: u32,
-    item: *const []const u8,
+    item: []const u8,
 
     pub fn init(
         value_set: ValueSet,
@@ -51,12 +51,12 @@ const Order = struct {
         return .{
             .quantity = quantity,
             .unit_price = unit_price,
-            .item = &(value_set.items.getKey(item) orelse return InsertError.NotInValueSet),
+            .item = value_set.items.getKey(item) orelse return InsertError.NotInValueSet,
         };
     }
 
     pub fn lessThen(self: *Order, other: *Order) bool {
-        return std.mem.lessThan(u8, self.item.*, other.item.*);
+        return std.mem.lessThan(u8, self.item, other.item);
     }
 };
 
@@ -65,8 +65,12 @@ test "Order" {
     var value_set = ValueSet.init(allocator);
     defer value_set.deinit();
 
-    try value_set.items.put("Item", {});
-    _ = try Order.init(value_set, 1, 123, "Item");
+    try value_set.items.put("Item1", {});
+    try value_set.items.put("Item2", {});
+    var order1 = try Order.init(value_set, 1, 123, "Item1");
+    var order2 = try Order.init(value_set, 1, 123, "Item2");
+    try std.testing.expect(order1.lessThen(&order2));
+    try std.testing.expect(!order2.lessThen(&order1));
 
     const failure = Order.init(value_set, 2, 100, "InvalidItem");
     try std.testing.expectError(InsertError.NotInValueSet, failure);
