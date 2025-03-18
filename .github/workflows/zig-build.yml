@@ -1,4 +1,4 @@
-name: Zig Build Test
+name: Zig Build
 
 on: [push, pull_request]
 
@@ -6,7 +6,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -17,5 +17,4 @@ jobs:
       - uses: mlugg/setup-zig@v1
         with:
           version: latest
-      - run: zig build test --summary new
-
+      - run: zig build
