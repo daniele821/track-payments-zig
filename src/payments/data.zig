@@ -77,9 +77,9 @@ test "Order" {
 }
 
 const Payment = struct {
-    city: *const []const u8,
-    shop: *const []const u8,
-    method: *const []const u8,
+    city: []const u8,
+    shop: []const u8,
+    method: []const u8,
     date: i64,
     orders: std.ArrayList(*Order),
 
@@ -92,9 +92,9 @@ const Payment = struct {
         date: i64,
     ) !Payment {
         return .{
-            .city = &(value_set.cities.getKey(city) orelse return InsertError.NotInValueSet),
-            .shop = &(value_set.shops.getKey(shop) orelse return InsertError.NotInValueSet),
-            .method = &(value_set.methods.getKey(method) orelse return InsertError.NotInValueSet),
+            .city = value_set.cities.getKey(city) orelse return InsertError.NotInValueSet,
+            .shop = value_set.shops.getKey(shop) orelse return InsertError.NotInValueSet,
+            .method = value_set.methods.getKey(method) orelse return InsertError.NotInValueSet,
             .date = date,
             .orders = std.ArrayList(*Order).init(allocator),
         };
