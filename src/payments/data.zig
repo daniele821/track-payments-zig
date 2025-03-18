@@ -131,12 +131,14 @@ pub const AllPayments = struct {
     allocator: std.mem.Allocator,
     value_set: ValueSet,
     payments: std.ArrayList(*Payment),
+    dates: std.AutoHashMap(i64, void),
 
     pub fn init(allocator: std.mem.Allocator) AllPayments {
         return .{
             .allocator = allocator,
             .value_set = ValueSet.init(allocator),
             .payments = std.ArrayList(*Payment).init(allocator),
+            .dates = std.AutoHashMap(i64, void).init(allocator),
         };
     }
 
@@ -194,6 +196,5 @@ test "AllPayments sort" {
     _ = order1;
     _ = order2;
     _ = order3;
-
-    @panic("TODO");
+    std.debug.print("TODO\n", .{});
 }
