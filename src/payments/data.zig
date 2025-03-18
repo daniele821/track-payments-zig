@@ -194,12 +194,6 @@ test "AllPayments" {
     const allocator = std.testing.allocator;
     var allPayments = AllPayments.init(allocator);
     defer allPayments.deinit();
-}
-
-test "AllPayments sort" {
-    const allocator = std.testing.allocator;
-    var allPayments = AllPayments.init(allocator);
-    defer allPayments.deinit();
 
     try allPayments.addValues(&.{"City"}, &.{"Shop"}, &.{"Method"}, &.{ "Item1", "Item2", "Item3" });
     const pay1 = try Payment.init(allocator, allPayments.value_set, "City", "Shop", "Method", 1);
