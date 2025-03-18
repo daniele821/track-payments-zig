@@ -171,9 +171,10 @@ pub const AllPayments = struct {
 
     pub fn deinit(self: *AllPayments) void {
         for (self.payments.items) |payment| {
-            for (payment.orders.items) |orders| {
-                self.allocator.destroy(orders);
+            for (payment.orders.items) |order| {
+                self.allocator.destroy(order);
             }
+            payment.orders.deinit();
             self.allocator.destroy(payment);
         }
         self.value_set.deinit();
@@ -217,6 +218,14 @@ pub const AllPayments = struct {
         try self.payments.append(allocated_payment);
         return allocated_payment;
     }
+
+    pub fn addOrder(self: *AllPayments, payment: *Payment, order: Order) !*Order {
+        var self_tmp = self;
+        const allocated_order = try self_tmp.allocator.create(Order);
+        allocated_order.* = order;
+        _ = try payment.orders.append(allocated_order);
+        return allocated_order;
+    }
 };
 
 test "AllPayments" {
@@ -230,11 +239,12 @@ test "AllPayments" {
     const order1 = try Order.init(allPayments.value_set, 3, 129, "Item1");
     const order2 = try Order.init(allPayments.value_set, 4, 100, "Item2");
     const order3 = try Order.init(allPayments.value_set, 1, 342, "Item3");
-    _ = try allPayments.addPayment(pay2);
-    _ = try allPayments.addPayment(pay1);
-    _ = order1;
-    _ = order2;
-    _ = order3;
+    const pay2ptr = try allPayments.addPayment(pay2);
+    const pay1ptr = try allPayments.addPayment(pay1);
+    _ = try allPayments.addOrder(pay1ptr, order1);
+    _ = try allPayments.addOrder(pay1ptr, order3);
+    _ = try allPayments.addOrder(pay1ptr, order2);
+    _ = try allPayments.addOrder(pay2ptr, order1);
 
     allPayments.sortPayments();
     for (allPayments.payments.items, 0..) |payment, index_payment| {
@@ -245,7 +255,4 @@ test "AllPayments" {
             try std.testing.expect(payment.orders.items[index_order - 1].lessThen(order));
         }
     }
-
-    // temporary : think how to handle allocations inside allpayment deinit
-    std.debug.print("TODO: finish tests for allPayment methods\n", .{});
 }
