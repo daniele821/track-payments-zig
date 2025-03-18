@@ -3,7 +3,7 @@ const errors = @import("./errors.zig");
 
 const InsertError = errors.InsertError;
 
-pub const ValueSet = struct {
+const ValueSet = struct {
     cities: std.StringHashMap(void),
     shops: std.StringHashMap(void),
     methods: std.StringHashMap(void),
@@ -36,7 +36,7 @@ test "ValueSet" {
     try value_set.methods.put("Method1", {});
 }
 
-pub const Order = struct {
+const Order = struct {
     quantity: u32,
     unit_price: u32,
     item: *const []const u8,
@@ -66,7 +66,7 @@ test "Order" {
     try std.testing.expectError(InsertError.NotInValueSet, failure);
 }
 
-pub const Payment = struct {
+const Payment = struct {
     city: *const []const u8,
     shop: *const []const u8,
     method: *const []const u8,
@@ -120,10 +120,6 @@ test "Payment" {
     defer payment.deinit();
 }
 
-test "Payment sort" {
-    @panic("TODO");
-}
-
 pub const AllPayments = struct {
     allocator: std.mem.Allocator,
     value_set: ValueSet,
@@ -155,6 +151,19 @@ pub const AllPayments = struct {
             }
         }.func;
         std.mem.sort(*Payment, self.payments, {}, lessThanFn);
+    }
+
+    pub fn addValues(
+        self: *AllPayments,
+        cities: []const []const u8,
+        shops: []const []const u8,
+        methods: []const []const u8,
+        items: []const []const u8,
+    ) !void {
+        for (cities) |city| try self.value_set.cities.put(city, {});
+        for (shops) |shop| try self.value_set.shops.put(shop, {});
+        for (methods) |method| try self.value_set.methods.put(method, {});
+        for (items) |item| try self.value_set.items.put(item, {});
     }
 
     pub fn allocOrder(self: *AllPayments, order: *Order) !*Order {
