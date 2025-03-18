@@ -19,7 +19,7 @@ pub fn main() !void {
         }
 
         perf = std.time.nanoTimestamp() - perf;
-        std.debug.print("SINGLE = {}\n", .{perf});
+        std.debug.print("SINGLE   = {}\n", .{perf});
 
         perf = std.time.nanoTimestamp();
         var arr = std.ArrayList(u128).init(allocator);
@@ -29,7 +29,7 @@ pub fn main() !void {
         }
 
         perf = std.time.nanoTimestamp() - perf;
-        std.debug.print("ARRAY  = {}\n", .{perf});
+        std.debug.print("ARRAY    = {}\n", .{perf});
 
         perf = std.time.nanoTimestamp();
         arr.clearAndFree();
@@ -37,6 +37,26 @@ pub fn main() !void {
         try arr.appendNTimes(123, ITER);
 
         perf = std.time.nanoTimestamp() - perf;
-        std.debug.print("ARRAY  = {}\n", .{perf});
+        std.debug.print("ARRAY2   = {}\n", .{perf});
+
+        const type1 = u8;
+        const type2 = u12;
+        var arr1 = std.ArrayList(type1).init(allocator);
+        var arr2 = std.ArrayList(type2).init(allocator);
+
+        for (0..ITER) |_| {
+            try arr1.append(std.crypto.random.int(type1));
+            try arr2.append(std.crypto.random.int(type2));
+        }
+        perf = std.time.nanoTimestamp();
+        std.mem.sort(type1, arr1.items, {}, std.sort.asc(type1));
+        perf = std.time.nanoTimestamp() - perf;
+        std.debug.print("SORT8    = {}\n", .{perf});
+
+        perf = std.time.nanoTimestamp();
+        std.mem.sort(type2, arr2.items, {}, std.sort.asc(type2));
+        perf = std.time.nanoTimestamp() - perf;
+        std.debug.print("SORT128  = {}\n", .{perf});
+        std.debug.print("-----------------\n", .{});
     }
 }
