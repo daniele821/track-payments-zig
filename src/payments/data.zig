@@ -202,10 +202,10 @@ pub const AllPayments = struct {
         methods: []const []const u8,
         items: []const []const u8,
     ) !void {
-        for (cities) |c| _ = try self.value_set.cities.getOrPut(c);
-        for (shops) |s| _ = try self.value_set.shops.getOrPut(s);
-        for (methods) |m| _ = try self.value_set.methods.getOrPut(m);
-        for (items) |i| _ = try self.value_set.items.getOrPut(i);
+        for (cities) |city| _ = try self.value_set.cities.getOrPut(city);
+        for (shops) |shop| _ = try self.value_set.shops.getOrPut(shop);
+        for (methods) |method| _ = try self.value_set.methods.getOrPut(method);
+        for (items) |item| _ = try self.value_set.items.getOrPut(item);
     }
 
     pub fn addPayment(self: *AllPayments, payment: Payment) !*Payment {
