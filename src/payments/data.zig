@@ -127,8 +127,14 @@ test "Payment" {
     try value_set.cities.put("City1", {});
     try value_set.methods.put("Method1", {});
 
-    var payment = try Payment.init(allocator, value_set, "City1", "Shop1", "Method1", 0);
-    defer payment.deinit();
+    var payment1 = try Payment.init(allocator, value_set, "City1", "Shop1", "Method1", 0);
+    defer payment1.deinit();
+
+    var payment2 = try Payment.init(allocator, value_set, "City1", "Shop1", "Method1", 1);
+    defer payment2.deinit();
+
+    try std.testing.expect(payment1.lessThen(&payment2));
+    try std.testing.expect(!payment2.lessThen(&payment1));
 }
 
 pub const AllPayments = struct {
