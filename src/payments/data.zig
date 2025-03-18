@@ -158,14 +158,14 @@ pub const AllPayments = struct {
     allocator: std.mem.Allocator,
     value_set: ValueSet,
     payments: std.ArrayList(*Payment),
-    dates: std.AutoHashMap(i64, void),
+    dates: std.AutoHashMap(i64, *Payment),
 
     pub fn init(allocator: std.mem.Allocator) AllPayments {
         return .{
             .allocator = allocator,
             .value_set = ValueSet.init(allocator),
             .payments = std.ArrayList(*Payment).init(allocator),
-            .dates = std.AutoHashMap(i64, void).init(allocator),
+            .dates = std.AutoHashMap(i64, *Payment).init(allocator),
         };
     }
 
@@ -214,7 +214,7 @@ pub const AllPayments = struct {
         var self_tmp = self;
         const allocated_payment = try self_tmp.allocator.create(Payment);
         allocated_payment.* = payment;
-        _ = try self.dates.getOrPut(payment.date);
+        _ = try self.dates.put(payment.date, allocated_payment);
         try self.payments.append(allocated_payment);
         return allocated_payment;
     }
