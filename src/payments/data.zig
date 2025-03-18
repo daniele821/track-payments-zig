@@ -238,5 +238,5 @@ test "AllPayments" {
     _ = order3;
 
     // temporary : think how to handle allocations inside allpayment deinit
-    std.debug.print("TODOwd\n", .{});
+    std.debug.print("TODO: add tests for allPayment methods\n", .{});
 }
