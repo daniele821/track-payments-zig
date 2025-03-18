@@ -42,7 +42,12 @@ const Order = struct {
     unit_price: u32,
     item: *const []const u8,
 
-    pub fn init(value_set: ValueSet, quantity: u32, unit_price: u32, item: []const u8) InsertError!Order {
+    pub fn init(
+        value_set: ValueSet,
+        quantity: u32,
+        unit_price: u32,
+        item: []const u8,
+    ) InsertError!Order {
         return .{
             .quantity = quantity,
             .unit_price = unit_price,
