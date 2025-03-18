@@ -40,7 +40,7 @@ test "ValueSet" {
 const Order = struct {
     quantity: u32,
     unit_price: u32,
-    item: []const u8,
+    item: *const []const u8,
 
     pub fn init(
         value_set: ValueSet,
@@ -51,12 +51,12 @@ const Order = struct {
         return .{
             .quantity = quantity,
             .unit_price = unit_price,
-            .item = value_set.items.getKey(item) orelse return InsertError.NotInValueSet,
+            .item = value_set.items.getKeyPtr(item) orelse return InsertError.NotInValueSet,
         };
     }
 
     pub fn lessThen(self: *Order, other: *Order) bool {
-        return std.mem.lessThan(u8, self.item, other.item);
+        return std.mem.lessThan(u8, self.item.*, other.item.*);
     }
 };
 
@@ -77,9 +77,9 @@ test "Order" {
 }
 
 const Payment = struct {
-    city: []const u8,
-    shop: []const u8,
-    method: []const u8,
+    city: *const []const u8,
+    shop: *const []const u8,
+    method: *const []const u8,
     date: i64,
     orders: std.ArrayList(*Order),
 
@@ -92,9 +92,9 @@ const Payment = struct {
         date: i64,
     ) !Payment {
         return .{
-            .city = value_set.cities.getKey(city) orelse return InsertError.NotInValueSet,
-            .shop = value_set.shops.getKey(shop) orelse return InsertError.NotInValueSet,
-            .method = value_set.methods.getKey(method) orelse return InsertError.NotInValueSet,
+            .city = value_set.cities.getKeyPtr(city) orelse return InsertError.NotInValueSet,
+            .shop = value_set.shops.getKeyPtr(shop) orelse return InsertError.NotInValueSet,
+            .method = value_set.methods.getKeyPtr(method) orelse return InsertError.NotInValueSet,
             .date = date,
             .orders = std.ArrayList(*Order).init(allocator),
         };
