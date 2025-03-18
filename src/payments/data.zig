@@ -17,6 +17,7 @@ const ValueSet = struct {
             .items = std.StringHashMap(void).init(allocator),
         };
     }
+
     pub fn deinit(self: *ValueSet) void {
         self.cities.deinit();
         self.shops.deinit();
@@ -89,6 +90,7 @@ const Payment = struct {
             .orders = std.ArrayList(*Order).init(allocator),
         };
     }
+
     pub fn deinit(self: *Payment) void {
         self.orders.deinit();
     }
@@ -132,6 +134,7 @@ pub const AllPayments = struct {
             .payments = std.ArrayList(*Payment).init(allocator),
         };
     }
+
     pub fn deinit(self: *AllPayments) void {
         for (self.payments.items) |payment| {
             for (payment.orders.items) |order| {
