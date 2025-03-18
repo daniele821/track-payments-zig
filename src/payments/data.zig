@@ -48,6 +48,10 @@ pub const Order = struct {
             .item = &(value_set.items.getKey(item) orelse return InsertError.NotInValueSet),
         };
     }
+
+    pub fn lessThen(self: *Order, other: *Order) bool {
+        return std.mem.lessThan(u8, self.item.*, other.item.*);
+    }
 };
 
 test "Order" {
@@ -88,6 +92,20 @@ pub const Payment = struct {
     pub fn deinit(self: *Payment) void {
         self.orders.deinit();
     }
+
+    pub fn lessThen(self: *Payment, other: *Payment) bool {
+        return self.date < other.date;
+    }
+
+    pub fn sortOrders(self: *Payment) void {
+        const lessThanFn = struct {
+            fn func(context: void, lhs: *Order, rhs: *Order) bool {
+                _ = context;
+                return lhs.lessThen(rhs);
+            }
+        }.func;
+        std.mem.sort(*Order, self.orders, {}, lessThanFn);
+    }
 };
 
 test "Payment" {
@@ -100,6 +118,10 @@ test "Payment" {
 
     var payment = try Payment.init(allocator, value_set, "City1", "Shop1", "Method1", 0);
     defer payment.deinit();
+}
+
+test "Payment sort" {
+    @panic("TODO");
 }
 
 pub const AllPayments = struct {
@@ -116,10 +138,24 @@ pub const AllPayments = struct {
         self.value_set.deinit();
         self.payments.deinit();
     }
+
+    pub fn sortPayments(self: *AllPayments) void {
+        const lessThanFn = struct {
+            fn func(context: void, lhs: *Payment, rhs: *Payment) bool {
+                _ = context;
+                return lhs.lessThen(rhs);
+            }
+        }.func;
+        std.mem.sort(*Payment, self.payments, {}, lessThanFn);
+    }
 };
 
 test "AllPayments" {
     const allocator = std.testing.allocator;
     var allPayments = AllPayments.init(allocator);
     defer allPayments.deinit();
+}
+
+test "AllPayments sort" {
+    @panic("TODO");
 }
