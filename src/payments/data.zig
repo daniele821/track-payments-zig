@@ -67,7 +67,7 @@ pub const Payment = struct {
     shop: *const []const u8,
     method: *const []const u8,
     date: i64,
-    orders: std.ArrayList(Order),
+    orders: std.ArrayList(*Order),
 
     pub fn init(
         allocator: std.mem.Allocator,
@@ -82,7 +82,7 @@ pub const Payment = struct {
             .shop = &(value_set.shops.getKey(shop) orelse return InsertError.NotInValueSet),
             .method = &(value_set.methods.getKey(method) orelse return InsertError.NotInValueSet),
             .date = date,
-            .orders = std.ArrayList(Order).init(allocator),
+            .orders = std.ArrayList(*Order).init(allocator),
         };
     }
     pub fn deinit(self: *Payment) void {
@@ -104,12 +104,12 @@ test "Payment init" {
 
 pub const AllPayments = struct {
     value_set: ValueSet,
-    payments: std.ArrayList(Payment),
+    payments: std.ArrayList(*Payment),
 
     pub fn init(allocator: std.mem.Allocator) AllPayments {
         return .{
             .value_set = ValueSet.init(allocator),
-            .payments = std.ArrayList(Payment).init(allocator),
+            .payments = std.ArrayList(*Payment).init(allocator),
         };
     }
     pub fn deinit(self: *AllPayments) void {
