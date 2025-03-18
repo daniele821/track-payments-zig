@@ -143,6 +143,9 @@ pub const AllPayments = struct {
     }
 
     pub fn deinit(self: *AllPayments) void {
+        for (self.payments.items) |payment| {
+            self.allocator.destroy(payment);
+        }
         self.value_set.deinit();
         self.payments.deinit();
         self.dates.deinit();
@@ -182,6 +185,7 @@ pub const AllPayments = struct {
         const allocated_payment = try self_tmp.allocator.create(Payment);
         allocated_payment.* = payment;
         _ = try self.dates.getOrPut(payment.date);
+        try self.payments.append(allocated_payment);
         return allocated_payment;
     }
 };
@@ -203,14 +207,12 @@ test "AllPayments sort" {
     const order1 = try Order.init(allPayments.value_set, 3, 129, "Item1");
     const order2 = try Order.init(allPayments.value_set, 4, 100, "Item2");
     const order3 = try Order.init(allPayments.value_set, 1, 342, "Item3");
+    _ = try allPayments.addPayment(pay1);
+    _ = try allPayments.addPayment(pay2);
     _ = order1;
     _ = order2;
     _ = order3;
-    const vpay1 = try allPayments.addPayment(pay1);
-    const vpay2 = try allPayments.addPayment(pay2);
 
     // temporary : think how to handle allocations inside allpayment deinit
-    allPayments.allocator.destroy(vpay1);
-    allPayments.allocator.destroy(vpay2);
     std.debug.print("TODOwd\n", .{});
 }
