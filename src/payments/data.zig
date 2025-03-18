@@ -115,7 +115,7 @@ const Payment = struct {
                 return lhs.lessThen(rhs);
             }
         }.func;
-        std.mem.sort(*Order, self.orders, {}, lessThanFn);
+        std.mem.sort(*Order, self.orders.items, {}, lessThanFn);
     }
 };
 
@@ -126,15 +126,32 @@ test "Payment" {
     try value_set.shops.put("Shop1", {});
     try value_set.cities.put("City1", {});
     try value_set.methods.put("Method1", {});
+    try value_set.items.put("Item1", {});
+    try value_set.items.put("Item2", {});
+    try value_set.items.put("Item3", {});
 
     var payment1 = try Payment.init(allocator, value_set, "City1", "Shop1", "Method1", 0);
     defer payment1.deinit();
-
     var payment2 = try Payment.init(allocator, value_set, "City1", "Shop1", "Method1", 1);
     defer payment2.deinit();
 
     try std.testing.expect(payment1.lessThen(&payment2));
     try std.testing.expect(!payment2.lessThen(&payment1));
+
+    var order1 = try Order.init(value_set, 1, 200, "Item1");
+    var order2 = try Order.init(value_set, 2, 120, "Item2");
+    var order3 = try Order.init(value_set, 3, 169, "Item3");
+
+    try payment1.orders.append(&order2);
+    try payment1.orders.append(&order1);
+    try payment1.orders.append(&order3);
+
+    payment1.sortOrders();
+
+    for (payment1.orders.items, 0..) |item, index| {
+        if (index == 0) continue;
+        try std.testing.expect(payment1.orders.items[index - 1].lessThen(item));
+    }
 }
 
 pub const AllPayments = struct {
@@ -171,7 +188,7 @@ pub const AllPayments = struct {
                 return lhs.lessThen(rhs);
             }
         }.func;
-        std.mem.sort(*Payment, self.payments, {}, lessThanFn);
+        std.mem.sort(*Payment, self.payments.items, {}, lessThanFn);
         for (self.payments.items) |payment| {
             payment.sortOrders();
         }
