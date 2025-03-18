@@ -55,7 +55,7 @@ pub const Order = struct {
         };
     }
 
-    pub fn lessThen(self: *Order, other: *Order) bool {
+    pub fn lessThen(self: *const Order, other: *const Order) bool {
         return std.mem.lessThan(u8, self.item.*, other.item.*);
     }
 };
@@ -104,11 +104,11 @@ pub const Payment = struct {
         self.orders.deinit();
     }
 
-    pub fn lessThen(self: *Payment, other: *Payment) bool {
+    pub fn lessThen(self: *const Payment, other: *const Payment) bool {
         return self.date < other.date;
     }
 
-    pub fn sortOrders(self: *Payment) void {
+    pub fn sortOrders(self: *const Payment) void {
         const lessThanFn = struct {
             fn func(context: void, lhs: *Order, rhs: *Order) bool {
                 _ = context;
@@ -182,7 +182,7 @@ pub const AllPayments = struct {
         self.dates.deinit();
     }
 
-    pub fn sortPayments(self: *AllPayments) void {
+    pub fn sortPayments(self: *const AllPayments) void {
         const lessThanFn = struct {
             fn func(context: void, lhs: *Payment, rhs: *Payment) bool {
                 _ = context;
@@ -219,7 +219,7 @@ pub const AllPayments = struct {
         return allocated_payment;
     }
 
-    pub fn addOrder(self: *AllPayments, payment: *Payment, order: Order) !*Order {
+    pub fn addOrder(self: *const AllPayments, payment: *Payment, order: Order) !*Order {
         var self_tmp = self;
         const allocated_order = try self_tmp.allocator.create(Order);
         allocated_order.* = order;
