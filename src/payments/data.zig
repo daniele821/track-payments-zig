@@ -41,7 +41,7 @@ pub const Order = struct {
     unit_price: u32,
     item: *const []const u8,
 
-    pub fn new(value_set: ValueSet, quantity: u32, unit_price: u32, item: []const u8) InsertError!Order {
+    pub fn init(value_set: ValueSet, quantity: u32, unit_price: u32, item: []const u8) InsertError!Order {
         return .{
             .quantity = quantity,
             .unit_price = unit_price,
@@ -56,9 +56,9 @@ test "Order init" {
     defer value_set.deinit();
 
     try value_set.items.put("Item", {});
-    _ = try Order.new(value_set, 1, 123, "Item");
+    _ = try Order.init(value_set, 1, 123, "Item");
 
-    const failure = Order.new(value_set, 2, 100, "InvalidItem");
+    const failure = Order.init(value_set, 2, 100, "InvalidItem");
     try std.testing.expectError(InsertError.NotInValueSet, failure);
 }
 
