@@ -144,6 +144,9 @@ pub const AllPayments = struct {
 
     pub fn deinit(self: *AllPayments) void {
         for (self.payments.items) |payment| {
+            for (payment.orders.items) |orders| {
+                self.allocator.destroy(orders);
+            }
             self.allocator.destroy(payment);
         }
         self.value_set.deinit();
