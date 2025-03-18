@@ -230,12 +230,22 @@ test "AllPayments" {
     const order1 = try Order.init(allPayments.value_set, 3, 129, "Item1");
     const order2 = try Order.init(allPayments.value_set, 4, 100, "Item2");
     const order3 = try Order.init(allPayments.value_set, 1, 342, "Item3");
-    _ = try allPayments.addPayment(pay1);
     _ = try allPayments.addPayment(pay2);
+    _ = try allPayments.addPayment(pay1);
     _ = order1;
     _ = order2;
     _ = order3;
 
+    allPayments.sortPayments();
+    for (allPayments.payments.items, 0..) |payment, index_payment| {
+        if (index_payment == 0) continue;
+        try std.testing.expect(allPayments.payments.items[index_payment - 1].lessThen(payment));
+        for (payment.orders.items, 0..) |order, index_order| {
+            if (index_order == 0) continue;
+            try std.testing.expect(payment.orders.items[index_order - 1].lessThen(order));
+        }
+    }
+
     // temporary : think how to handle allocations inside allpayment deinit
-    std.debug.print("TODO: add tests for allPayment methods\n", .{});
+    std.debug.print("TODO: finish tests for allPayment methods\n", .{});
 }
