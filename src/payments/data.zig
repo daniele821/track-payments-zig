@@ -77,7 +77,7 @@ const Payment = struct {
     shop: *const []const u8,
     method: *const []const u8,
     date: i64,
-    orders: std.ArrayList(*Order),
+    orders: std.ArrayList(Order),
 
     pub fn init(
         allocator: std.mem.Allocator,
@@ -92,7 +92,7 @@ const Payment = struct {
             .shop = &(value_set.shops.getKey(shop) orelse return InsertError.NotInValueSet),
             .method = &(value_set.methods.getKey(method) orelse return InsertError.NotInValueSet),
             .date = date,
-            .orders = std.ArrayList(*Order).init(allocator),
+            .orders = std.ArrayList(Order).init(allocator),
         };
     }
 
@@ -106,12 +106,12 @@ const Payment = struct {
 
     pub fn sortOrders(self: *Payment) void {
         const lessThanFn = struct {
-            fn func(context: void, lhs: *Order, rhs: *Order) bool {
+            fn func(context: void, lhs: Order, rhs: Order) bool {
                 _ = context;
                 return lhs.lessThen(rhs);
             }
         }.func;
-        std.mem.sort(*Order, self.orders, {}, lessThanFn);
+        std.mem.sort(Order, self.orders, {}, lessThanFn);
     }
 };
 
@@ -130,35 +130,32 @@ test "Payment" {
 pub const AllPayments = struct {
     allocator: std.mem.Allocator,
     value_set: ValueSet,
-    payments: std.ArrayList(*Payment),
+    payments: std.ArrayList(Payment),
 
     pub fn init(allocator: std.mem.Allocator) AllPayments {
         return .{
             .allocator = allocator,
             .value_set = ValueSet.init(allocator),
-            .payments = std.ArrayList(*Payment).init(allocator),
+            .payments = std.ArrayList(Payment).init(allocator),
         };
     }
 
     pub fn deinit(self: *AllPayments) void {
-        for (self.payments.items) |payment| {
-            for (payment.orders.items) |order| {
-                self.allocator.destroy(order);
-            }
-            self.allocator.destroy(payment);
-        }
         self.value_set.deinit();
         self.payments.deinit();
     }
 
     pub fn sortPayments(self: *AllPayments) void {
         const lessThanFn = struct {
-            fn func(context: void, lhs: *Payment, rhs: *Payment) bool {
+            fn func(context: void, lhs: Payment, rhs: Payment) bool {
                 _ = context;
                 return lhs.lessThen(rhs);
             }
         }.func;
-        std.mem.sort(*Payment, self.payments, {}, lessThanFn);
+        std.mem.sort(Payment, self.payments, {}, lessThanFn);
+        for (self.payments.items) |payment| {
+            payment.sortOrders();
+        }
     }
 
     pub fn addValues(
@@ -168,22 +165,10 @@ pub const AllPayments = struct {
         methods: []const []const u8,
         items: []const []const u8,
     ) !void {
-        for (cities) |city| try self.value_set.cities.put(city, {});
-        for (shops) |shop| try self.value_set.shops.put(shop, {});
-        for (methods) |method| try self.value_set.methods.put(method, {});
-        for (items) |item| try self.value_set.items.put(item, {});
-    }
-
-    pub fn allocOrder(self: *AllPayments, order: *Order) !*Order {
-        const allocated_order = try self.allocator.create(Order);
-        allocated_order.* = order.*;
-        return allocated_order;
-    }
-
-    pub fn allocPayment(self: *AllPayments, payment: *Payment) !*Payment {
-        const allocated_payment = try self.allocator.create(Payment);
-        allocated_payment.* = payment.*;
-        return allocated_payment;
+        for (cities) |c| _ = try self.value_set.cities.getOrPut(c);
+        for (shops) |s| _ = try self.value_set.shops.getOrPut(s);
+        for (methods) |m| _ = try self.value_set.methods.getOrPut(m);
+        for (items) |i| _ = try self.value_set.items.getOrPut(i);
     }
 };
 
@@ -194,5 +179,21 @@ test "AllPayments" {
 }
 
 test "AllPayments sort" {
+    const allocator = std.testing.allocator;
+    var allPayments = AllPayments.init(allocator);
+    defer allPayments.deinit();
+
+    try allPayments.addValues(&.{"City"}, &.{"Shop"}, &.{"Method"}, &.{ "Item1", "Item2", "Item3" });
+    const pay1 = try Payment.init(allocator, allPayments.value_set, "City", "Shop", "Method", 1);
+    const pay2 = try Payment.init(allocator, allPayments.value_set, "City", "Shop", "Method", 2);
+    const order1 = try Order.init(allPayments.value_set, 3, 129, "Item1");
+    const order2 = try Order.init(allPayments.value_set, 4, 100, "Item2");
+    const order3 = try Order.init(allPayments.value_set, 1, 342, "Item3");
+    _ = pay1;
+    _ = pay2;
+    _ = order1;
+    _ = order2;
+    _ = order3;
+
     @panic("TODO");
 }
