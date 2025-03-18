@@ -4,7 +4,6 @@ const errors = @import("./errors.zig");
 const InsertError = errors.InsertError;
 
 pub const ValueSet = struct {
-    allocator: std.mem.Allocator,
     cities: std.StringHashMap(void),
     shops: std.StringHashMap(void),
     methods: std.StringHashMap(void),
@@ -12,7 +11,6 @@ pub const ValueSet = struct {
 
     pub fn init(allocator: std.mem.Allocator) ValueSet {
         return .{
-            .allocator = allocator,
             .cities = std.StringHashMap(void).init(allocator),
             .shops = std.StringHashMap(void).init(allocator),
             .methods = std.StringHashMap(void).init(allocator),
@@ -41,13 +39,13 @@ test "ValueSet init" {
 pub const Order = struct {
     quantity: u32,
     unit_price: u32,
-    item: []const u8,
+    item: *const []const u8,
 
     pub fn new(value_set: ValueSet, quantity: u32, unit_price: u32, item: []const u8) InsertError!Order {
         return .{
             .quantity = quantity,
             .unit_price = unit_price,
-            .item = value_set.items.getKey(item) orelse return InsertError.NotInValueSet,
+            .item = &(value_set.items.getKey(item) orelse return InsertError.NotInValueSet),
         };
     }
 };
@@ -65,10 +63,9 @@ test "Order init" {
 }
 
 pub const Payment = struct {
-    allocator: std.mem.Allocator,
-    city: []const u8,
-    shop: []const u8,
-    method: []const u8,
+    city: *const []const u8,
+    shop: *const []const u8,
+    method: *const []const u8,
     date: i64,
     orders: std.ArrayList(Order),
 
@@ -81,10 +78,9 @@ pub const Payment = struct {
         date: i64,
     ) InsertError!Payment {
         return .{
-            .allocator = allocator,
-            .city = value_set.cities.getKey(city) orelse return InsertError.NotInValueSet,
-            .shop = value_set.shops.getKey(shop) orelse return InsertError.NotInValueSet,
-            .method = value_set.methods.getKey(method) orelse return InsertError.NotInValueSet,
+            .city = &(value_set.cities.getKey(city) orelse return InsertError.NotInValueSet),
+            .shop = &(value_set.shops.getKey(shop) orelse return InsertError.NotInValueSet),
+            .method = &(value_set.methods.getKey(method) orelse return InsertError.NotInValueSet),
             .date = date,
             .orders = std.ArrayList(Order).init(allocator),
         };
@@ -107,13 +103,11 @@ test "Payment init" {
 }
 
 pub const AllPayments = struct {
-    allocator: std.mem.Allocator,
     value_set: ValueSet,
     payments: std.ArrayList(Payment),
 
     pub fn init(allocator: std.mem.Allocator) AllPayments {
         return .{
-            .allocator = allocator,
             .value_set = ValueSet.init(allocator),
             .payments = std.ArrayList(Payment).init(allocator),
         };
