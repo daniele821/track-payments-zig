@@ -47,7 +47,7 @@ const Order = struct {
         quantity: u32,
         unit_price: u32,
         item: []const u8,
-    ) InsertError!Order {
+    ) !Order {
         return .{
             .quantity = quantity,
             .unit_price = unit_price,
@@ -86,7 +86,7 @@ const Payment = struct {
         shop: []const u8,
         method: []const u8,
         date: i64,
-    ) InsertError!Payment {
+    ) !Payment {
         return .{
             .city = &(value_set.cities.getKey(city) orelse return InsertError.NotInValueSet),
             .shop = &(value_set.shops.getKey(shop) orelse return InsertError.NotInValueSet),
@@ -145,6 +145,7 @@ pub const AllPayments = struct {
     pub fn deinit(self: *AllPayments) void {
         self.value_set.deinit();
         self.payments.deinit();
+        self.dates.deinit();
     }
 
     pub fn sortPayments(self: *AllPayments) void {
@@ -172,6 +173,17 @@ pub const AllPayments = struct {
         for (methods) |m| _ = try self.value_set.methods.getOrPut(m);
         for (items) |i| _ = try self.value_set.items.getOrPut(i);
     }
+
+    pub fn addPayment(self: *AllPayments, payment: Payment) !*Payment {
+        if (self.dates.contains(payment.date)) {
+            return InsertError.NotUniqueValue;
+        }
+        var self_tmp = self;
+        const allocated_payment = try self_tmp.allocator.create(Payment);
+        allocated_payment.* = payment;
+        _ = try self.dates.getOrPut(payment.date);
+        return allocated_payment;
+    }
 };
 
 test "AllPayments" {
@@ -191,10 +203,14 @@ test "AllPayments sort" {
     const order1 = try Order.init(allPayments.value_set, 3, 129, "Item1");
     const order2 = try Order.init(allPayments.value_set, 4, 100, "Item2");
     const order3 = try Order.init(allPayments.value_set, 1, 342, "Item3");
-    _ = pay1;
-    _ = pay2;
     _ = order1;
     _ = order2;
     _ = order3;
-    std.debug.print("TODO\n", .{});
+    const vpay1 = try allPayments.addPayment(pay1);
+    const vpay2 = try allPayments.addPayment(pay2);
+
+    // temporary : think how to handle allocations inside allpayment deinit
+    allPayments.allocator.destroy(vpay1);
+    allPayments.allocator.destroy(vpay2);
+    std.debug.print("TODOwd\n", .{});
 }

@@ -1,3 +1,3 @@
 const std = @import("std");
 
-pub const InsertError = error{NotInValueSet};
+pub const InsertError = error{ NotInValueSet, NotUniqueValue };
