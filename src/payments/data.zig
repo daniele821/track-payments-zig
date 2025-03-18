@@ -77,7 +77,7 @@ const Payment = struct {
     shop: *const []const u8,
     method: *const []const u8,
     date: i64,
-    orders: std.ArrayList(Order),
+    orders: std.ArrayList(*Order),
 
     pub fn init(
         allocator: std.mem.Allocator,
@@ -92,7 +92,7 @@ const Payment = struct {
             .shop = &(value_set.shops.getKey(shop) orelse return InsertError.NotInValueSet),
             .method = &(value_set.methods.getKey(method) orelse return InsertError.NotInValueSet),
             .date = date,
-            .orders = std.ArrayList(Order).init(allocator),
+            .orders = std.ArrayList(*Order).init(allocator),
         };
     }
 
@@ -106,12 +106,12 @@ const Payment = struct {
 
     pub fn sortOrders(self: *Payment) void {
         const lessThanFn = struct {
-            fn func(context: void, lhs: Order, rhs: Order) bool {
+            fn func(context: void, lhs: *Order, rhs: *Order) bool {
                 _ = context;
                 return lhs.lessThen(rhs);
             }
         }.func;
-        std.mem.sort(Order, self.orders, {}, lessThanFn);
+        std.mem.sort(*Order, self.orders, {}, lessThanFn);
     }
 };
 
@@ -130,13 +130,13 @@ test "Payment" {
 pub const AllPayments = struct {
     allocator: std.mem.Allocator,
     value_set: ValueSet,
-    payments: std.ArrayList(Payment),
+    payments: std.ArrayList(*Payment),
 
     pub fn init(allocator: std.mem.Allocator) AllPayments {
         return .{
             .allocator = allocator,
             .value_set = ValueSet.init(allocator),
-            .payments = std.ArrayList(Payment).init(allocator),
+            .payments = std.ArrayList(*Payment).init(allocator),
         };
     }
 
@@ -147,12 +147,12 @@ pub const AllPayments = struct {
 
     pub fn sortPayments(self: *AllPayments) void {
         const lessThanFn = struct {
-            fn func(context: void, lhs: Payment, rhs: Payment) bool {
+            fn func(context: void, lhs: *Payment, rhs: *Payment) bool {
                 _ = context;
                 return lhs.lessThen(rhs);
             }
         }.func;
-        std.mem.sort(Payment, self.payments, {}, lessThanFn);
+        std.mem.sort(*Payment, self.payments, {}, lessThanFn);
         for (self.payments.items) |payment| {
             payment.sortOrders();
         }
