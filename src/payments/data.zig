@@ -25,7 +25,7 @@ pub const ValueSet = struct {
     }
 };
 
-test "ValueSet init" {
+test "ValueSet" {
     const allocator = std.testing.allocator;
     var value_set = ValueSet.init(allocator);
     defer value_set.deinit();
@@ -50,7 +50,7 @@ pub const Order = struct {
     }
 };
 
-test "Order init" {
+test "Order" {
     const allocator = std.testing.allocator;
     var value_set = ValueSet.init(allocator);
     defer value_set.deinit();
@@ -90,7 +90,7 @@ pub const Payment = struct {
     }
 };
 
-test "Payment init" {
+test "Payment" {
     const allocator = std.testing.allocator;
     var value_set = ValueSet.init(allocator);
     defer value_set.deinit();
@@ -118,7 +118,7 @@ pub const AllPayments = struct {
     }
 };
 
-test "AllPayments init" {
+test "AllPayments" {
     const allocator = std.testing.allocator;
     var allPayments = AllPayments.init(allocator);
     defer allPayments.deinit();

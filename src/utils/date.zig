@@ -25,7 +25,7 @@ pub const DateUtil = struct {
     }
 };
 
-test "DateUtil init" {
+test "DateUtil" {
     const allocator = std.testing.allocator;
     var date_unit = try DateUtil.init(allocator);
     defer date_unit.deinit();
