@@ -125,16 +125,24 @@ test "Payment sort" {
 }
 
 pub const AllPayments = struct {
+    allocator: std.mem.Allocator,
     value_set: ValueSet,
     payments: std.ArrayList(*Payment),
 
     pub fn init(allocator: std.mem.Allocator) AllPayments {
         return .{
+            .allocator = allocator,
             .value_set = ValueSet.init(allocator),
             .payments = std.ArrayList(*Payment).init(allocator),
         };
     }
     pub fn deinit(self: *AllPayments) void {
+        for (self.payments.items) |payment| {
+            for (payment.orders.items) |order| {
+                self.allocator.destroy(order);
+            }
+            self.allocator.destroy(payment);
+        }
         self.value_set.deinit();
         self.payments.deinit();
     }
@@ -147,6 +155,18 @@ pub const AllPayments = struct {
             }
         }.func;
         std.mem.sort(*Payment, self.payments, {}, lessThanFn);
+    }
+
+    pub fn allocOrder(self: *AllPayments, order: *Order) !*Order {
+        const allocated_order = try self.allocator.create(Order);
+        allocated_order.* = order.*;
+        return allocated_order;
+    }
+
+    pub fn allocPayment(self: *AllPayments, payment: *Payment) !*Payment {
+        const allocated_payment = try self.allocator.create(Payment);
+        allocated_payment.* = payment.*;
+        return allocated_payment;
     }
 };
 
