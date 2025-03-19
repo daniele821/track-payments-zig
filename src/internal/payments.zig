@@ -1,5 +1,4 @@
 const std = @import("std");
-const errors = @import("./errors.zig");
 
 const InsertError = error{
     NotInValueSet,
