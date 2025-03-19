@@ -15,13 +15,12 @@ pub const DateUtil = struct {
         self.timezone.deinit();
     }
 
-    pub fn now(self: *DateUtil) !i64 {
+    pub fn now(self: *DateUtil) !zdt.Datetime {
         const date = try zdt.Datetime.now(.{ .tz = &self.timezone });
         var fields = date.toFields();
         fields.tz_options = null;
         fields.nanosecond = 0;
-        const localDate = try zdt.Datetime.fromFields(fields);
-        return @intCast(localDate.toUnix(zdt.Duration.Resolution.second));
+        return try zdt.Datetime.fromFields(fields);
     }
 };
 
