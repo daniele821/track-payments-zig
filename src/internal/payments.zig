@@ -1,7 +1,10 @@
 const std = @import("std");
 const errors = @import("./errors.zig");
 
-const InsertError = errors.InsertError;
+const InsertError = error{
+    NotInValueSet,
+    NotUniqueValue,
+};
 
 pub const ValueSet = struct {
     cities: std.StringHashMap(void),
