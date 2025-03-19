@@ -1,5 +1,7 @@
 const std = @import("std");
 
+// REDO: make an interface, which allows multiple implementations!
+
 const InsertError = error{
     NotInValueSet,
     NotUniqueValue,
