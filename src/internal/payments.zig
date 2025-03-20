@@ -7,7 +7,7 @@ pub const AllPayments = struct {
     ptr: *anyopaque,
     vtable: *const Vtable,
 
-    const Vtable = struct {
+    pub const Vtable = struct {
         addElement: *const fn (ptr: *anyopaque, new_element: []const u8, elem_type: Elements) anyerror!void,
         hasElement: *const fn (ptr: *anyopaque, element: []const u8, elem_type: Elements) bool,
     };

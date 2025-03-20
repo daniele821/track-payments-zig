@@ -5,4 +5,5 @@ test {
     _ = @import("./internal/crypto.zig");
     _ = @import("./internal/date.zig");
     _ = @import("./internal/payments.zig");
+    _ = @import("./internal/payments_basic.zig");
 }
