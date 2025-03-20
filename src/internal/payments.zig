@@ -1,12 +1,12 @@
 const std = @import("std");
 
+pub const Elements = enum { items, cities, shops, methods };
+
 pub const AllPayments = struct {
     ptr: *anyopaque,
     vtable: *const Vtable,
 
     const Self = @This();
-
-    const Elements = enum { items, cities, shops, methods };
 
     const Vtable = struct {
         addElement: *const fn (ptr: *anyopaque, new_element: []const u8, elem_type: Elements) anyerror!void,
