@@ -24,22 +24,23 @@ pub const AllPaymentsBasic = struct {
         };
     }
 
-    pub fn addElement(self: *anyopaque, new_element: []const u8, elem_type: pay.Elements) !void {
+    fn addElement(self: *anyopaque, new_element: []const u8, elem_type: pay.Elements) !void {
         _ = self;
         _ = new_element;
         _ = elem_type;
     }
 
-    pub fn hasElement(self: *anyopaque, element: []const u8, elem_type: pay.Elements) bool {
+    fn hasElement(self: *anyopaque, element: []const u8, elem_type: pay.Elements) bool {
         _ = self;
         _ = element;
         _ = elem_type;
+        return false;
     }
 };
 
 test "AllPaymentBasic" {
     const allocator = std.testing.allocator;
-    const allPaymentsBasic = AllPaymentsBasic.init(allocator);
+    var allPaymentsBasic = AllPaymentsBasic.init(allocator);
     defer allPaymentsBasic.deinit();
     const allPayments = allPaymentsBasic.allPayments();
 
