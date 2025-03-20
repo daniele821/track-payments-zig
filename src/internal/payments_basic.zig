@@ -4,22 +4,20 @@ const pay = @import("./payments.zig");
 pub const AllPaymentsBasic = struct {
     allocator: std.mem.Allocator,
 
-    const Self = @This();
-
-    pub fn init(allocator: std.mem.Allocator) Self {
-        return Self{
+    pub fn init(allocator: std.mem.Allocator) AllPaymentsBasic {
+        return .{
             .allocator = allocator,
         };
     }
 
-    pub fn deinit(self: *Self) void {
+    pub fn deinit(self: *AllPaymentsBasic) void {
         _ = self;
     }
 
-    pub fn allPayments(self: *Self) pay.AllPayments {
-        return pay.AllPayments{
+    pub fn allPayments(self: *AllPaymentsBasic) pay.AllPayments {
+        return .{
             .ptr = self,
-            .vtable = &pay.AllPayments.Vtable{
+            .vtable = &.{
                 .hasElement = hasElement,
                 .addElement = addElement,
             },
