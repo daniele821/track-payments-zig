@@ -3,7 +3,7 @@ const std = @import("std");
 const Elements = enum { items, cities, shops, methods };
 
 const Vtable = struct {
-    addElement: *const fn (ptr: *anyopaque, new_element: []const u8, elem_type: Elements) void,
+    addElement: *const fn (ptr: *anyopaque, new_element: []const u8, elem_type: Elements) anyerror!void,
     hasElement: *const fn (ptr: *anyopaque, element: []const u8, elem_type: Elements) bool,
 };
 
@@ -13,7 +13,7 @@ pub const AllPayments = struct {
 
     pub const Self = @This();
 
-    pub fn addElement(self: *Self, new_element: []const u8, elem_type: Elements) void {
+    pub fn addElement(self: *Self, new_element: []const u8, elem_type: Elements) !void {
         return self.vtable.addElement(self, new_element, elem_type);
     }
 
