@@ -1,4 +1,5 @@
 const std = @import("std");
+const builtin = @import("builtin");
 
 pub const Elements = enum { items, cities, shops, methods };
 
@@ -21,3 +22,8 @@ pub const AllPayments = struct {
         return self.vtable.hasElement(self, element, elem_type);
     }
 };
+
+pub fn testImplementation(allPayments: AllPayments) void {
+    std.debug.assert(builtin.is_test);
+    _ = allPayments;
+}
