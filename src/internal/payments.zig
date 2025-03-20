@@ -1,7 +1,7 @@
 const std = @import("std");
 const builtin = @import("builtin");
 
-pub const Elements = enum { items, cities, shops, methods };
+pub const Elements = enum { item, city, shop, method };
 
 pub const AllPayments = struct {
     ptr: *anyopaque,
@@ -25,5 +25,14 @@ pub const AllPayments = struct {
 
 pub fn testImplementation(allPayments: AllPayments) void {
     std.debug.assert(builtin.is_test);
-    _ = allPayments;
+
+    // try inserting some elements
+    allPayments.addElement("Item", Elements.item);
+    allPayments.addElement("City", Elements.city);
+    allPayments.addElement("Shop", Elements.shop);
+    allPayments.addElement("Method", Elements.method);
+    try std.testing.assert(allPayments.hasElement("Item", Elements.item));
+    try std.testing.assert(allPayments.hasElement("City", Elements.city));
+    try std.testing.assert(allPayments.hasElement("Shop", Elements.shop));
+    try std.testing.assert(allPayments.hasElement("Method", Elements.method));
 }
