@@ -60,7 +60,6 @@ test "AllPaymentBasic" {
     const allocator = std.testing.allocator;
     var allPaymentsBasic = AllPaymentsBasic.init(allocator);
     defer allPaymentsBasic.deinit();
-    const allPayments = allPaymentsBasic.allPayments();
 
-    try pay.testImplementation(allPayments);
+    try pay.testImplementation(allPaymentsBasic.allPayments());
 }
