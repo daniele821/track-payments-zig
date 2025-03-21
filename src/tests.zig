@@ -6,4 +6,5 @@ test {
     _ = @import("./internal/date.zig");
     _ = @import("./internal/payments.zig");
     _ = @import("./internal/payments_basic.zig");
+    _ = @import("./internal/payments_optimized.zig");
 }

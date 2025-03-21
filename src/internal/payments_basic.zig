@@ -8,7 +8,9 @@ pub const AllPaymentsBasic = struct {
     shops: std.StringHashMap(void),
     methods: std.StringHashMap(void),
 
-    pub fn init(allocator: std.mem.Allocator) AllPaymentsBasic {
+    const Self = @This();
+
+    pub fn init(allocator: std.mem.Allocator) Self {
         return .{
             .allocator = allocator,
             .items = std.StringHashMap(void).init(allocator),
@@ -18,14 +20,14 @@ pub const AllPaymentsBasic = struct {
         };
     }
 
-    pub fn deinit(self: *AllPaymentsBasic) void {
+    pub fn deinit(self: *Self) void {
         self.items.deinit();
         self.cities.deinit();
         self.shops.deinit();
         self.methods.deinit();
     }
 
-    pub fn allPayments(self: *AllPaymentsBasic) pay.AllPayments {
+    pub fn allPayments(self: *Self) pay.AllPayments {
         return .{
             .ptr = self,
             .vtable = &.{
@@ -36,7 +38,7 @@ pub const AllPaymentsBasic = struct {
     }
 
     fn addElement(self: *anyopaque, new_element: []const u8, elem_type: pay.Elements) !void {
-        const selfTyped: *AllPaymentsBasic = @ptrCast(@alignCast(self));
+        const selfTyped: *Self = @ptrCast(@alignCast(self));
         switch (elem_type) {
             .item => try selfTyped.items.put(new_element, {}),
             .city => try selfTyped.cities.put(new_element, {}),
@@ -46,7 +48,7 @@ pub const AllPaymentsBasic = struct {
     }
 
     fn hasElement(self: *anyopaque, element: []const u8, elem_type: pay.Elements) bool {
-        const selfTyped: *AllPaymentsBasic = @ptrCast(@alignCast(self));
+        const selfTyped: *Self = @ptrCast(@alignCast(self));
         return switch (elem_type) {
             .item => selfTyped.items.contains(element),
             .city => selfTyped.cities.contains(element),
