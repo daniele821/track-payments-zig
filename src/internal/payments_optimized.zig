@@ -21,6 +21,31 @@ pub const AllPaymentsOptimized = struct {
         }
         self.elements.deinit();
     }
+
+    pub fn allPayments(self: *Self) pay.AllPayments {
+        return .{
+            .ptr = self,
+            .vtable = &.{
+                .hasElement = hasElement,
+                .addElement = addElement,
+            },
+        };
+    }
+
+    fn addElement(self: *anyopaque, new_element: []const u8, elem_type: pay.Elements) !void {
+        const selfTyped: *Self = @ptrCast(@alignCast(self));
+        _ = selfTyped;
+        _ = new_element;
+        _ = elem_type;
+    }
+
+    fn hasElement(self: *anyopaque, element: []const u8, elem_type: pay.Elements) bool {
+        const selfTyped: *Self = @ptrCast(@alignCast(self));
+        _ = selfTyped;
+        _ = element;
+        _ = elem_type;
+        return true;
+    }
 };
 
 test "AllPaymentBasic" {
@@ -28,5 +53,5 @@ test "AllPaymentBasic" {
     var allPaymentsOptimized = AllPaymentsOptimized.init(allocator);
     defer allPaymentsOptimized.deinit();
 
-    // pay.testImplementation(allPaymentsOptimized);
+    try pay.testImplementation(allPaymentsOptimized.allPayments());
 }
