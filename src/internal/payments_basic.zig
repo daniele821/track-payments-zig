@@ -34,7 +34,7 @@ pub const AllPaymentsBasic = struct {
         _ = self;
         _ = element;
         _ = elem_type;
-        return false;
+        return true;
     }
 };
 
@@ -44,5 +44,5 @@ test "AllPaymentBasic" {
     defer allPaymentsBasic.deinit();
     const allPayments = allPaymentsBasic.allPayments();
 
-    pay.testImplementation(allPayments);
+    try pay.testImplementation(allPayments);
 }

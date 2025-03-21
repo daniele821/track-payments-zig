@@ -21,7 +21,7 @@ pub const AllPayments = struct {
     }
 };
 
-pub fn testImplementation(allPayments: AllPayments) void {
+pub fn testImplementation(allPayments: AllPayments) !void {
     std.debug.assert(builtin.is_test);
 
     // try inserting some elements
@@ -29,8 +29,8 @@ pub fn testImplementation(allPayments: AllPayments) void {
     try allPayments.addElement("City", Elements.city);
     try allPayments.addElement("Shop", Elements.shop);
     try allPayments.addElement("Method", Elements.method);
-    try std.testing.assert(allPayments.hasElement("Item", Elements.item));
-    try std.testing.assert(allPayments.hasElement("City", Elements.city));
-    try std.testing.assert(allPayments.hasElement("Shop", Elements.shop));
-    try std.testing.assert(allPayments.hasElement("Method", Elements.method));
+    try std.testing.expect(allPayments.hasElement("Item", Elements.item));
+    try std.testing.expect(allPayments.hasElement("City", Elements.city));
+    try std.testing.expect(allPayments.hasElement("Shop", Elements.shop));
+    try std.testing.expect(allPayments.hasElement("Method", Elements.method));
 }
