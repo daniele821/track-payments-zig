@@ -1,5 +1,7 @@
 const std = @import("std");
 const builtin = @import("builtin");
+const payBasic = @import("./payments_basic.zig");
+const payOpt = @import("./payments_optimized.zig");
 
 pub const Elements = enum { item, city, shop, method };
 
@@ -20,6 +22,9 @@ pub const AllPayments = struct {
         return self.vtable.hasElement(self.ptr, element, elem_type);
     }
 };
+
+pub const AllPaymentsBasic = payBasic.AllPaymentsBasic;
+pub const AllPaymentsOptimized = payOpt.AllPaymentsOptimized;
 
 pub fn testImplementation(allPayments: AllPayments) !void {
     std.debug.assert(builtin.is_test);
