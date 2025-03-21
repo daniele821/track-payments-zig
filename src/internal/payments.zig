@@ -25,12 +25,8 @@ pub fn testImplementation(allPayments: AllPayments) !void {
     std.debug.assert(builtin.is_test);
 
     // try inserting some elements
-    try allPayments.addElement("Item", Elements.item);
-    try allPayments.addElement("City", Elements.city);
-    try allPayments.addElement("Shop", Elements.shop);
-    try allPayments.addElement("Method", Elements.method);
-    try std.testing.expect(allPayments.hasElement("Item", Elements.item));
-    try std.testing.expect(allPayments.hasElement("City", Elements.city));
-    try std.testing.expect(allPayments.hasElement("Shop", Elements.shop));
-    try std.testing.expect(allPayments.hasElement("Method", Elements.method));
+    inline for (std.meta.fields(Elements)) |elem| {
+        try allPayments.addElement(elem.name, @enumFromInt(elem.value));
+        try std.testing.expect(allPayments.hasElement(elem.name, @enumFromInt(elem.value)));
+    }
 }
