@@ -3,15 +3,26 @@ const pay = @import("./payments.zig");
 
 pub const AllPaymentsBasic = struct {
     allocator: std.mem.Allocator,
+    items: std.StringHashMap(void),
+    cities: std.StringHashMap(void),
+    shops: std.StringHashMap(void),
+    methods: std.StringHashMap(void),
 
     pub fn init(allocator: std.mem.Allocator) AllPaymentsBasic {
         return .{
             .allocator = allocator,
+            .items = std.StringHashMap(void).init(allocator),
+            .cities = std.StringHashMap(void).init(allocator),
+            .shops = std.StringHashMap(void).init(allocator),
+            .methods = std.StringHashMap(void).init(allocator),
         };
     }
 
     pub fn deinit(self: *AllPaymentsBasic) void {
-        _ = self;
+        self.items.deinit();
+        self.cities.deinit();
+        self.shops.deinit();
+        self.methods.deinit();
     }
 
     pub fn allPayments(self: *AllPaymentsBasic) pay.AllPayments {
@@ -25,16 +36,23 @@ pub const AllPaymentsBasic = struct {
     }
 
     fn addElement(self: *anyopaque, new_element: []const u8, elem_type: pay.Elements) !void {
-        _ = self;
-        _ = new_element;
-        _ = elem_type;
+        const selfTyped: *AllPaymentsBasic = @ptrCast(@alignCast(self));
+        switch (elem_type) {
+            .item => try selfTyped.items.put(new_element, {}),
+            .city => try selfTyped.cities.put(new_element, {}),
+            .shop => try selfTyped.shops.put(new_element, {}),
+            .method => try selfTyped.methods.put(new_element, {}),
+        }
     }
 
     fn hasElement(self: *anyopaque, element: []const u8, elem_type: pay.Elements) bool {
-        _ = self;
-        _ = element;
-        _ = elem_type;
-        return true;
+        const selfTyped: *AllPaymentsBasic = @ptrCast(@alignCast(self));
+        return switch (elem_type) {
+            .item => selfTyped.items.contains(element),
+            .city => selfTyped.cities.contains(element),
+            .shop => selfTyped.shops.contains(element),
+            .method => selfTyped.methods.contains(element),
+        };
     }
 };
 
