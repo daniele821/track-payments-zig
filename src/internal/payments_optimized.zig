@@ -34,17 +34,16 @@ pub const AllPaymentsOptimized = struct {
 
     fn addElement(self: *anyopaque, new_element: []const u8, elem_type: pay.Elements) !void {
         const selfTyped: *Self = @ptrCast(@alignCast(self));
-        _ = selfTyped;
-        _ = new_element;
-        _ = elem_type;
+        const stringHashMap = std.StringHashMap(void).init(selfTyped.allocator);
+        _ = try selfTyped.elements.getOrPutValue(elem_type, stringHashMap);
+        const stringSet = selfTyped.elements.getPtr(elem_type) orelse unreachable;
+        _ = try stringSet.getOrPut(new_element);
     }
 
     fn hasElement(self: *anyopaque, element: []const u8, elem_type: pay.Elements) bool {
         const selfTyped: *Self = @ptrCast(@alignCast(self));
-        _ = selfTyped;
-        _ = element;
-        _ = elem_type;
-        return true;
+        const stringHashMap = selfTyped.elements.get(elem_type) orelse unreachable;
+        return stringHashMap.contains(element);
     }
 };
 
