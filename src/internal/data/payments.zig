@@ -25,6 +25,9 @@ pub const Payments = struct {
     pub fn init(allocator: std.mem.Allocator) Self {
         return Self{
             .allocator = allocator,
+            .strings_pool = std.ArrayList([]const u8).init(allocator),
+            .payments_pool = std.ArrayList(Payment).init(allocator),
+            .orders_pool = std.ArrayList(std.ArrayList(Order)).init(allocator),
         };
     }
 
@@ -35,6 +38,6 @@ pub const Payments = struct {
 
 test "payments" {
     const allocator = std.testing.allocator;
-    const payments = Payments.init(allocator);
+    var payments = Payments.init(allocator);
     defer payments.deinit();
 }
