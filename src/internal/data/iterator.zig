@@ -8,10 +8,10 @@ pub fn Iterator(T: type) type {
         const Self = @This();
 
         pub const Vtable = struct {
-            next: *const fn (self: *anyopaque) ?*T,
+            next: *const fn (self: *anyopaque) ?*const T,
         };
 
-        pub fn next(self: Self) ?*T {
+        pub fn next(self: Self) ?*const T {
             return self.vtable.next(self);
         }
     };
