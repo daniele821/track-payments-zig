@@ -2,6 +2,7 @@ const std = @import("std");
 const builtin = @import("builtin");
 const payBasic = @import("./payments_basic.zig");
 const payOpt = @import("./payments_optimized.zig");
+const iter = @import("./iterator.zig");
 
 pub const Elements = enum { item, city, shop, method };
 
@@ -9,6 +10,12 @@ pub const Order = struct {
     unit_price: u32,
     quantity: u32,
     item: []const u8,
+
+    const Self = @This();
+
+    pub fn lessThen(self: *Self, other: *Self) bool {
+        return std.mem.lessThan(u8, self.item, other.item);
+    }
 };
 
 pub const Payment = struct {
@@ -16,7 +23,13 @@ pub const Payment = struct {
     shop: []const u8,
     method: []const u8,
     date: i64,
-    // iterator of orders
+    orders: iter.IterGen(Order),
+
+    const Self = @This();
+
+    pub fn lessThen(self: *Self, other: *Self) bool {
+        return self.date < other.date;
+    }
 };
 
 pub const AllPayments = struct {
