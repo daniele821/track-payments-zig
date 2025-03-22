@@ -9,7 +9,6 @@ pub fn Iterator(T: type) type {
 
         pub const Vtable = struct {
             next: *const fn (self: *anyopaque) ?*const T,
-            elem_left: *const fn (self: *anyopaque) u32,
         };
 
         pub fn next(self: Self) ?*const T {
