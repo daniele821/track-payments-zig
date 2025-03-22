@@ -5,6 +5,20 @@ const payOpt = @import("./payments_optimized.zig");
 
 pub const Elements = enum { item, city, shop, method };
 
+pub const Order = struct {
+    unit_price: u32,
+    quantity: u32,
+    item: []const u8,
+};
+
+pub const Payment = struct {
+    city: []const u8,
+    shop: []const u8,
+    method: []const u8,
+    date: i64,
+    // iterator of orders
+};
+
 pub const AllPayments = struct {
     ptr: *anyopaque,
     vtable: *const Vtable,
