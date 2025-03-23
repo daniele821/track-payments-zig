@@ -7,7 +7,7 @@ pub const Payments = struct {
     elements: ElementSets,
 
     const Self = @This();
-    const ElementSet = std.AutoHashMapUnmanaged([]const u8, void);
+    const ElementSet = std.StringHashMapUnmanaged(void);
     const ElementSets = std.AutoHashMapUnmanaged(ElementType, ElementSet);
 
     const Order = struct {
@@ -40,16 +40,14 @@ pub const Payments = struct {
     }
 
     pub fn addElement(self: *Self, new_element: []const u8, element_type: ElementType) !void {
-        _ = self;
-        _ = new_element;
-        _ = element_type;
+        _ = try self.elements.getOrPutValue(self.allocator, element_type, ElementSet{});
+        const elementSetPtr: *ElementSet = self.elements.getPtr(element_type).?;
+        _ = try elementSetPtr.getOrPut(self.allocator, new_element);
     }
 
     pub fn hasElement(self: *Self, element: []const u8, element_type: ElementType) bool {
-        _ = self;
-        _ = element;
-        _ = element_type;
-        return true;
+        const element_set = self.elements.get(element_type) orelse return false;
+        return element_set.contains(element);
     }
 };
 
