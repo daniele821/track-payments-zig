@@ -44,8 +44,9 @@ pub const Payments = struct {
     }
 
     pub fn deinit(self: *Self) void {
-        // test i can nest arryylist
-        // if possible -> write loop to free OrdersPool inner lists
+        for (self.orders_pool.items) |*items| {
+            items.deinit(self.allocator);
+        }
         self.strings_pool.deinit(self.allocator);
         self.payments_pool.deinit(self.allocator);
         self.orders_pool.deinit(self.allocator);
