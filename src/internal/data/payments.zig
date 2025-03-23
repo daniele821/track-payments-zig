@@ -1,20 +1,13 @@
 const std = @import("std");
 
+pub const Elements = enum { city, shop, method, item };
+
 pub const Payments = struct {
     allocator: std.mem.Allocator,
     strings_pool: StringPool,
-    payments_pool: PaymentsPool,
-    orders_pool: OrdersPool,
-    cities: StringHashMap,
-    shops: StringHashMap,
-    methods: StringHashMap,
-    items: StringHashMap,
 
     const Self = @This();
-    const StringPool = std.ArrayListUnmanaged([]const u8);
-    const PaymentsPool = std.ArrayListUnmanaged(Payment);
-    const OrdersPool = std.ArrayListUnmanaged(std.ArrayListUnmanaged(Order));
-    const StringHashMap = std.AutoHashMapUnmanaged(u32, void);
+    const StringPool = std.StringHashMapUnmanaged([]const u8);
 
     const Order = struct {
         unit_price: u32,
@@ -34,26 +27,11 @@ pub const Payments = struct {
         return Self{
             .allocator = allocator,
             .strings_pool = StringPool{},
-            .payments_pool = PaymentsPool{},
-            .orders_pool = OrdersPool{},
-            .cities = StringHashMap{},
-            .shops = StringHashMap{},
-            .methods = StringHashMap{},
-            .items = StringHashMap{},
         };
     }
 
     pub fn deinit(self: *Self) void {
-        for (self.orders_pool.items) |*items| {
-            items.deinit(self.allocator);
-        }
         self.strings_pool.deinit(self.allocator);
-        self.payments_pool.deinit(self.allocator);
-        self.orders_pool.deinit(self.allocator);
-        self.cities.deinit(self.allocator);
-        self.shops.deinit(self.allocator);
-        self.methods.deinit(self.allocator);
-        self.items.deinit(self.allocator);
     }
 };
 
