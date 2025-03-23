@@ -5,9 +5,12 @@ pub const Elements = enum { city, shop, method, item };
 pub const Payments = struct {
     allocator: std.mem.Allocator,
     strings_pool: StringPool,
+    elements: ElementSets,
 
     const Self = @This();
     const StringPool = std.StringHashMapUnmanaged([]const u8);
+    const ElementSet = std.AutoHashMapUnmanaged(*const []const u8, void);
+    const ElementSets = std.AutoHashMapUnmanaged(Elements, ElementSet);
 
     const Order = struct {
         unit_price: u32,
@@ -27,11 +30,17 @@ pub const Payments = struct {
         return Self{
             .allocator = allocator,
             .strings_pool = StringPool{},
+            .elements = ElementSets{},
         };
     }
 
     pub fn deinit(self: *Self) void {
         self.strings_pool.deinit(self.allocator);
+        var iterator = self.elements.valueIterator();
+        while (iterator.next()) |elems| {
+            elems.deinit(self.allocator);
+        }
+        self.elements.deinit(self.allocator);
     }
 };
 
