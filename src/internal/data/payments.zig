@@ -5,29 +5,33 @@ pub const ElementType = enum { city, shop, method, item };
 pub const Payments = struct {
     allocator: std.mem.Allocator,
     elements: ElementSets,
+    payments: PaymentList,
 
     const Self = @This();
     const ElementSet = std.StringHashMapUnmanaged(void);
     const ElementSets = std.AutoHashMapUnmanaged(ElementType, ElementSet);
+    const PaymentList = std.ArrayListUnmanaged(Payment);
+    const OrderList = std.ArrayListUnmanaged(Order);
 
     const Order = struct {
         unit_price: u32,
         quantity: u32,
-        item: u32,
+        item: *const []const u8,
     };
 
     const Payment = struct {
-        city: u32,
-        shop: u32,
-        method: u32,
+        city: *const []const u8,
+        shop: *const []const u8,
+        method: *const []const u8,
         date: i64,
-        orders: u32,
+        orders: OrderList,
     };
 
     pub fn init(allocator: std.mem.Allocator) Self {
         return Self{
             .allocator = allocator,
             .elements = ElementSets{},
+            .payments = PaymentList{},
         };
     }
 
@@ -35,6 +39,8 @@ pub const Payments = struct {
         var iterator = self.elements.valueIterator();
         while (iterator.next()) |elems| elems.deinit(self.allocator);
         self.elements.deinit(self.allocator);
+        for (self.payments.items) |*payment| payment.orders.deinit(self.allocator);
+        self.payments.deinit(self.allocator);
     }
 
     pub fn addElement(self: *Self, new_element: []const u8, element_type: ElementType) !void {
