@@ -2,6 +2,21 @@ const std = @import("std");
 
 pub const ElementType = enum { city, shop, method, item };
 
+pub fn Iterator(T: type) type {
+    return struct {
+        ptr: *anyopaque,
+        vtable: *const Vtable,
+
+        pub const Vtable = struct {
+            next: fn (self: *anyopaque) ?*const T,
+        };
+
+        pub fn next(self: Iterator(T)) ?*const T {
+            return self.vtable.next(self.ptr);
+        }
+    };
+}
+
 pub const Payments = struct {
     allocator: std.mem.Allocator,
     elements: ElementSets,
