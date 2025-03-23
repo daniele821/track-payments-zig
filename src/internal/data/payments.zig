@@ -33,15 +33,13 @@ pub const Payments = struct {
 
     pub fn deinit(self: *Self) void {
         var iterator = self.elements.valueIterator();
-        while (iterator.next()) |elems| {
-            elems.deinit(self.allocator);
-        }
+        while (iterator.next()) |elems| elems.deinit(self.allocator);
         self.elements.deinit(self.allocator);
     }
 
     pub fn addElement(self: *Self, new_element: []const u8, element_type: ElementType) !void {
         _ = try self.elements.getOrPutValue(self.allocator, element_type, ElementSet{});
-        const elementSetPtr: *ElementSet = self.elements.getPtr(element_type).?;
+        const elementSetPtr = self.elements.getPtr(element_type).?;
         _ = try elementSetPtr.getOrPut(self.allocator, new_element);
     }
 
