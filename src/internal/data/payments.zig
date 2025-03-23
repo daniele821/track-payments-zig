@@ -4,12 +4,10 @@ pub const ElementType = enum { city, shop, method, item };
 
 pub const Payments = struct {
     allocator: std.mem.Allocator,
-    strings_pool: StringPool,
     elements: ElementSets,
 
     const Self = @This();
-    const StringPool = std.StringHashMapUnmanaged([]const u8);
-    const ElementSet = std.AutoHashMapUnmanaged(*const []const u8, void);
+    const ElementSet = std.AutoHashMapUnmanaged([]const u8, void);
     const ElementSets = std.AutoHashMapUnmanaged(ElementType, ElementSet);
 
     const Order = struct {
@@ -29,13 +27,11 @@ pub const Payments = struct {
     pub fn init(allocator: std.mem.Allocator) Self {
         return Self{
             .allocator = allocator,
-            .strings_pool = StringPool{},
             .elements = ElementSets{},
         };
     }
 
     pub fn deinit(self: *Self) void {
-        self.strings_pool.deinit(self.allocator);
         var iterator = self.elements.valueIterator();
         while (iterator.next()) |elems| {
             elems.deinit(self.allocator);
@@ -44,11 +40,9 @@ pub const Payments = struct {
     }
 
     pub fn addElement(self: *Self, new_element: []const u8, element_type: ElementType) !void {
-        _ = try self.strings_pool.getOrPut(self.allocator, new_element);
-        const str_ptr = self.strings_pool.getPtr(new_element).?;
-        _ = try self.elements.getOrPutValue(self.allocator, element_type, ElementSet{});
-        const element_set: *ElementSet = self.elements.getPtr(element_type).?;
-        _ = try element_set.getOrPut(self.allocator, str_ptr);
+        _ = self;
+        _ = new_element;
+        _ = element_type;
     }
 
     pub fn hasElement(self: *Self, element: []const u8, element_type: ElementType) bool {
