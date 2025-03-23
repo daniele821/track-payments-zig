@@ -45,7 +45,10 @@ pub const Payments = struct {
 
     pub fn addElement(self: *Self, new_element: []const u8, element_type: ElementType) !void {
         _ = try self.strings_pool.getOrPut(self.allocator, new_element);
-        _ = element_type;
+        const str_ptr = self.strings_pool.getPtr(new_element).?;
+        _ = try self.elements.getOrPutValue(self.allocator, element_type, ElementSet{});
+        const element_set: *ElementSet = self.elements.getPtr(element_type).?;
+        _ = try element_set.getOrPut(self.allocator, str_ptr);
     }
 
     pub fn hasElement(self: *Self, element: []const u8, element_type: ElementType) bool {
